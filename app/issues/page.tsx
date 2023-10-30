@@ -1,5 +1,15 @@
+"use client";
+import { Button } from "@radix-ui/themes";
+import { useRouter } from "next/navigation";
+import React from "react";
+
 const IssuesPage = () => {
-  return <div>Bugges page</div>;
+  const router = useRouter();
+  return (
+    <div>
+      <Button onClick={() => router.push("/issues/new")}>New Issue</Button>
+    </div>
+  );
 };
 
 export default IssuesPage;
