@@ -1,5 +1,5 @@
 const IssuesPage = () => {
-  return <div></div>;
+  return <div>Bugges page</div>;
 };
 
 export default IssuesPage;
