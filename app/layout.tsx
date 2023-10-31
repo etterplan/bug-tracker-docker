@@ -5,7 +5,6 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import NavBar from "./NavBar";
 import { Theme } from "@radix-ui/themes";
-import "react-loading-skeleton/dist/skeleton.css";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
