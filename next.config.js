@@ -6,7 +6,7 @@ const nextConfig = {
                 source: '/:path',
                 headers: [
                     {
-            key: 'referrer-policy', value:'no-referre'
+            key: 'referrer-policy', value:'no-referrer'
         }]}
         ]
     }
