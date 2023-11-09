@@ -33,5 +33,15 @@ const IssueDetailsPage = async ({ params }: Pros) => {
     </Grid>
   );
 };
+export async function generateMetadata({ params }: Pros) {
+  const issue = await prisma.issue.findUnique({
+    where: { id: parseInt(params.id) },
+  });
+
+  return {
+    title: issue?.title,
+    description: "Details of issue" + issue?.id,
+  };
+}
 
 export default IssueDetailsPage;

@@ -4,6 +4,7 @@ import Pagination from "../components/Pagination";
 import IssueTable, { IssuseQuery, columnNames } from "./IssueTable";
 import IssuseAction from "./IssuseAction";
 import { Flex } from "@radix-ui/themes";
+import { Metadata } from "next";
 const IssuesPage = async ({ searchParams }: { searchParams: IssuseQuery }) => {
   const statuses = Object.values(Status);
   const status = statuses.includes(searchParams.status)
@@ -38,3 +39,8 @@ const IssuesPage = async ({ searchParams }: { searchParams: IssuseQuery }) => {
 export const dynamic = "force-dynamic";
 
 export default IssuesPage;
+
+export const metadata: Metadata = {
+  title: "Issue Tracker - Issue List",
+  description: "View a project issues",
+};
