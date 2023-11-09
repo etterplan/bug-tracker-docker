@@ -5,7 +5,7 @@ import IssuseStatusFilter from "./IssuseStatusFilter";
 
 const IssuseAction = () => {
   return (
-    <Flex mb="5" justify="between">
+    <Flex justify="between">
       <IssuseStatusFilter />
       <Button>
         <Link href="/issues/new">New Issue</Link>
