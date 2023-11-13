@@ -1,5 +1,5 @@
 "use client";
-import React, { Children, PropsWithChildren } from "react";
+import React, { PropsWithChildren } from "react";
 import {
   QueryClient,
   QueryClientProvider as ReactQueryClientProvider,
