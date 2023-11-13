@@ -12,6 +12,12 @@ const authOptions: NextAuthOptions = {
             clientSecret: process.env.GOOGLE_CLIENT_SECRET!
           })
     ],
+    callbacks: {
+        session: async ({ session, token }) => {
+            session.user && (session.user.id = token.sub!)
+            return session
+        },
+      },
     session:{
         strategy: "jwt"
     },

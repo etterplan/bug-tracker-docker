@@ -1,10 +1,10 @@
 import prisma from "@/prisma/client";
 import { Status } from "@prisma/client";
+import { Flex } from "@radix-ui/themes";
+import { Metadata } from "next";
 import Pagination from "../components/Pagination";
 import IssueTable, { IssuseQuery, columnNames } from "./IssueTable";
 import IssuseAction from "./IssuseAction";
-import { Flex } from "@radix-ui/themes";
-import { Metadata } from "next";
 const IssuesPage = async ({ searchParams }: { searchParams: IssuseQuery }) => {
   const statuses = Object.values(Status);
   const status = statuses.includes(searchParams.status)
