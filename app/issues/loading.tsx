@@ -1,11 +1,11 @@
-import { Table } from "@radix-ui/themes";
+import { Flex, Table } from "@radix-ui/themes";
 import { Skeleton } from "@/app/components";
 import IssuseAction from "./IssuseAction";
 
 const LoadingIssuesPage = () => {
   const issues = [1, 2, 3, 4, 5];
   return (
-    <div>
+    <Flex direction="column" gap="2">
       <IssuseAction />
       <Table.Root variant="surface">
         <Table.Header>
@@ -38,7 +38,7 @@ const LoadingIssuesPage = () => {
           ))}
         </Table.Body>
       </Table.Root>
-    </div>
+    </Flex>
   );
 };
 
