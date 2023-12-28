@@ -3,6 +3,7 @@ import { ArrowUpIcon } from "@radix-ui/react-icons";
 import { Table } from "@radix-ui/themes";
 import Link from "next/link";
 import { IssueStatusBadge } from "../components";
+import PriorityIcon from "../components/PriorityIcon";
 
 export interface IssuseQuery {
   status: Status;
@@ -48,6 +49,9 @@ const IssueTable = ({ searchParams, issues }: Props) => {
               </div>
             </Table.Cell>
             <Table.Cell className="hidden md:table-cell">
+              <PriorityIcon priority={issue.priority} />
+            </Table.Cell>
+            <Table.Cell className="hidden md:table-cell">
               <IssueStatusBadge status={issue.status} />
             </Table.Cell>
             <Table.Cell className="hidden md:table-cell">
@@ -66,6 +70,7 @@ const columns: {
   className?: string;
 }[] = [
   { label: "Issue", value: "title" },
+  { label: "Priority", value: "priority", className: "hidden md:table-cell" },
   { label: "Status", value: "status", className: "hidden md:table-cell" },
   { label: "Created", value: "createdAt", className: "hidden md:table-cell" },
 ];
