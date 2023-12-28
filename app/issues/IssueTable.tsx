@@ -3,7 +3,7 @@ import { ArrowUpIcon } from "@radix-ui/react-icons";
 import { Table } from "@radix-ui/themes";
 import Link from "next/link";
 import { IssueStatusBadge } from "../components";
-import PriorityIcon from "../components/PriorityIcon";
+import { PriorityIcon } from "../components";
 
 export interface IssuseQuery {
   status: Status;
@@ -44,18 +44,19 @@ const IssueTable = ({ searchParams, issues }: Props) => {
           <Table.Row key={issue.id}>
             <Table.Cell>
               <Link href={`/issues/${issue.id}`}>{issue.title}</Link>
-              <div className="block md:hidden">
+              <div className="flex md:hidden gap-1">
                 <IssueStatusBadge status={issue.status} />
+                <PriorityIcon priority={issue.priority} />
               </div>
-            </Table.Cell>
-            <Table.Cell className="hidden md:table-cell">
-              <PriorityIcon priority={issue.priority} />
             </Table.Cell>
             <Table.Cell className="hidden md:table-cell">
               <IssueStatusBadge status={issue.status} />
             </Table.Cell>
             <Table.Cell className="hidden md:table-cell">
               {issue.createdAt.toDateString()}
+            </Table.Cell>
+            <Table.Cell className="hidden md:table-cell">
+              <PriorityIcon priority={issue.priority} />
             </Table.Cell>
           </Table.Row>
         ))}
@@ -70,9 +71,9 @@ const columns: {
   className?: string;
 }[] = [
   { label: "Issue", value: "title" },
-  { label: "Priority", value: "priority", className: "hidden md:table-cell" },
   { label: "Status", value: "status", className: "hidden md:table-cell" },
   { label: "Created", value: "createdAt", className: "hidden md:table-cell" },
+  { label: "Priority", value: "priority", className: "hidden md:table-cell" },
 ];
 
 export const columnNames = columns.map((column) => column.value);
