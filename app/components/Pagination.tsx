@@ -5,24 +5,34 @@ import {
   DoubleArrowLeftIcon,
   DoubleArrowRightIcon,
 } from "@radix-ui/react-icons";
-import { Button, Flex, Text } from "@radix-ui/themes";
+import { Button, Flex, Text, Select } from "@radix-ui/themes";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useState } from "react";
 
 interface Props {
   itemsCount: number;
   pageSize: number;
   currentPage: number;
 }
-const Pagination = ({ itemsCount, pageSize, currentPage }: Props) => {
+const Pagination = ({ itemsCount, pageSize: initialPageSize, currentPage }: Props) => {
   const router = useRouter();
   const searchParms = useSearchParams();
 
+  const [pageSize, setPageSize] = useState(initialPageSize);
+
   const pageCount = Math.ceil(itemsCount / pageSize);
 
-  const changePage = (page: number) => {
+  const changePage = (page: number, newPageSize?: number) => {
     const params = new URLSearchParams(searchParms);
     params.set("page", page.toString());
+    params.set("pageSize", newPageSize ? newPageSize.toString() : pageSize.toString());
     router.push("?" + params.toString());
+  };
+
+  const changePageSize = (newPageSize: string) => {
+    const newSize = parseInt(newPageSize);
+    setPageSize(parseInt(newPageSize));
+    changePage(1, newSize); // resets to first page when page size changes, this is probably good
   };
 
   if (pageCount <= 1) return null;
@@ -64,6 +74,20 @@ const Pagination = ({ itemsCount, pageSize, currentPage }: Props) => {
       >
         <DoubleArrowRightIcon />
       </Button>
+      <Select.Root value={pageSize.toString()} onValueChange={changePageSize}>
+        <Select.Trigger placeholder="Change issues per page" />
+        <Select.Content>
+          <Select.Item value="5" key="5">
+            5
+          </Select.Item>
+          <Select.Item value="10" key="10">
+            10
+          </Select.Item>
+          <Select.Item value="15" key="15">
+            15
+          </Select.Item>
+        </Select.Content>
+      </Select.Root>
     </Flex>
   );
 };

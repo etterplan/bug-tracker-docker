@@ -9,6 +9,7 @@ export interface IssuseQuery {
   status: Status;
   orderBy: keyof Issue;
   page: string;
+  pageSize: string;
 }
 interface Props {
   searchParams: IssuseQuery;
