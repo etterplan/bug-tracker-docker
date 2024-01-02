@@ -4,28 +4,39 @@ import { Issue, User } from "@prisma/client";
 import { Select } from "@radix-ui/themes";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
+import { useRouter } from "next/navigation";
 import toast, { Toaster } from "react-hot-toast";
 
 const AssigneeSelect = ({ issue }: { issue: Issue }) => {
   const { data: users, error, isLoading } = useUser();
-
-  if (isLoading) return <Skeleton />;
+  const router = useRouter();
+  if (isLoading) return <Skeleton height={"2rem"} />;
   if (error) return null;
 
-  const assginIssue = (userId: string) => {
-    axios
-      .patch("/api/issues/" + issue.id, {
+  const assignIssue = async (userId: string) => {
+    try {
+      const updatedIssue = {
         assignedToUserId: userId === "unassigned" ? null : userId,
-      })
-      .catch(() => {
-        toast.error("Changes could not be saved.");
-      });
+        status:
+          userId === "unassigned"
+            ? "OPEN"
+            : userId
+            ? "IN_PROGRESS"
+            : issue.status,
+      };
+
+      await axios.patch(`/api/issues/${issue.id}`, updatedIssue);
+
+      router.refresh();
+    } catch (error) {
+      toast.error("Changes could not be saved.");
+    }
   };
   return (
     <>
       <Select.Root
         defaultValue={issue.assignedToUserId || "unassigned"}
-        onValueChange={assginIssue}
+        onValueChange={assignIssue}
       >
         <Select.Trigger placeholder="Assign..." />
         <Select.Content>
