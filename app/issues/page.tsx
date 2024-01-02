@@ -5,6 +5,7 @@ import { Metadata } from "next";
 import Pagination from "../components/Pagination";
 import IssueTable, { IssuseQuery, columnNames } from "./IssueTable";
 import IssuseAction from "./IssuseAction";
+
 const IssuesPage = async ({ searchParams }: { searchParams: IssuseQuery }) => {
   const statuses = Object.values(Status);
   const status = statuses.includes(searchParams.status)
@@ -12,7 +13,7 @@ const IssuesPage = async ({ searchParams }: { searchParams: IssuseQuery }) => {
     : undefined;
   const where = { status };
   const orderBy = columnNames.includes(searchParams.orderBy)
-    ? { [searchParams.orderBy]: "asc" }
+    ? { [searchParams.orderBy]: searchParams.sortOrder || "asc" }
     : undefined;
   const page = parseInt(searchParams.page) || 1;
   const pageSize = parseInt(searchParams.pageSize) || 10;
