@@ -1,7 +1,7 @@
 import prisma from "@/prisma/client";
 import { Box, Flex, Grid } from "@radix-ui/themes";
 import { notFound } from "next/navigation";
-import EditIssueButon from "./EditIssueButon";
+import EditIssueButton from "./EditIssueButton";
 import IssueDetails from "./IssueDetails";
 import DeleteIssueButton from "./DeleteIssueButton";
 import { getServerSession } from "next-auth";
@@ -27,8 +27,12 @@ const IssueDetailsPage = async ({ params }: Pros) => {
       {session && (
         <Box>
           <Flex direction="column" gap="4">
-            <AssigneeSelect issue={issue} />
-            <EditIssueButon issueId={issue.id} />
+            {issue.status !== "CLOSED" && (
+              <>
+                <AssigneeSelect issue={issue} />
+                <EditIssueButton issueId={issue.id} />
+              </>
+            )}
             <DeleteIssueButton issueId={issue.id} />
           </Flex>
         </Box>
