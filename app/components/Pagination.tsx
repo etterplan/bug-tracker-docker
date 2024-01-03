@@ -7,7 +7,7 @@ import {
 } from "@radix-ui/react-icons";
 import { Button, Flex, Text, Select } from "@radix-ui/themes";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface Props {
   itemsCount: number;
@@ -20,6 +20,10 @@ const Pagination = ({ itemsCount, pageSize: initialPageSize, currentPage }: Prop
 
   const [pageSize, setPageSize] = useState(initialPageSize);
 
+  useEffect(() => {
+    setPageSize(initialPageSize);
+  }, [initialPageSize]);
+
   const pageCount = Math.ceil(itemsCount / pageSize);
 
   const changePage = (page: number, newPageSize?: number) => {
@@ -31,7 +35,7 @@ const Pagination = ({ itemsCount, pageSize: initialPageSize, currentPage }: Prop
 
   const changePageSize = (newPageSize: string) => {
     const newSize = parseInt(newPageSize);
-    setPageSize(parseInt(newPageSize));
+    setPageSize(newSize);
     changePage(1, newSize); // resets to first page when page size changes, this is probably good
   };
 
