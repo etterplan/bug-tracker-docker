@@ -17,7 +17,8 @@ const IssuseStatusFilter = () => {
     <Select.Root
       defaultValue={searchParms.get("status") || ""}
       onValueChange={(status) => {
-        const parms = new URLSearchParams();
+        const parms = new URLSearchParams(searchParms);
+        parms.delete('status');
         if (status) parms.append("status", status);
         if (searchParms.get("orderBy"))
           parms.append("orderBy", searchParms.get("orderBy")!);
