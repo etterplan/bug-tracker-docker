@@ -37,8 +37,6 @@ const IssuesPage = async ({ searchParams }: { searchParams: IssuseQuery }) => {
   );
 };
 
-export const dynamic = "force-dynamic";
-
 export default IssuesPage;
 
 export const metadata: Metadata = {
