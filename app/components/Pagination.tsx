@@ -5,16 +5,20 @@ import {
   DoubleArrowLeftIcon,
   DoubleArrowRightIcon,
 } from "@radix-ui/react-icons";
-import { Button, Flex, Text, Select } from "@radix-ui/themes";
+import { Button, Flex, Select, Text } from "@radix-ui/themes";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 
 interface Props {
   itemsCount: number;
   pageSize: number;
   currentPage: number;
 }
-const Pagination = ({ itemsCount, pageSize: initialPageSize, currentPage }: Props) => {
+const Pagination = ({
+  itemsCount,
+  pageSize: initialPageSize,
+  currentPage,
+}: Props) => {
   const router = useRouter();
   const searchParms = useSearchParams();
 
@@ -29,7 +33,10 @@ const Pagination = ({ itemsCount, pageSize: initialPageSize, currentPage }: Prop
   const changePage = (page: number, newPageSize?: number) => {
     const params = new URLSearchParams(searchParms);
     params.set("page", page.toString());
-    params.set("pageSize", newPageSize ? newPageSize.toString() : pageSize.toString());
+    params.set(
+      "pageSize",
+      newPageSize ? newPageSize.toString() : pageSize.toString()
+    );
     router.push("?" + params.toString());
   };
 

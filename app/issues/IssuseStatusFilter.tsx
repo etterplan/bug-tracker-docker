@@ -2,7 +2,7 @@
 import { Status } from "@prisma/client";
 import { Select } from "@radix-ui/themes";
 import { useRouter, useSearchParams } from "next/navigation";
-import React, { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 
 const statuses: { label: string; value?: Status }[] = [
   { label: "All" },
@@ -13,7 +13,9 @@ const statuses: { label: string; value?: Status }[] = [
 const IssuseStatusFilter = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [selectedStatus, setSelectedStatus] = useState(searchParams.get("status") || "");
+  const [selectedStatus, setSelectedStatus] = useState(
+    searchParams.get("status") || ""
+  );
 
   useEffect(() => {
     setSelectedStatus(searchParams.get("status") || "");
@@ -25,7 +27,7 @@ const IssuseStatusFilter = () => {
       onValueChange={(status) => {
         setSelectedStatus(status);
         const parms = new URLSearchParams(searchParams);
-        parms.delete('status');
+        parms.delete("status");
         if (status) parms.append("status", status);
         if (searchParams.get("orderBy"))
           parms.append("orderBy", searchParams.get("orderBy")!);
