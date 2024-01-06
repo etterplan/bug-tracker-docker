@@ -1,5 +1,5 @@
 "use client"
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { Select } from "@radix-ui/themes";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
@@ -9,16 +9,41 @@ import { useRouter, useSearchParams } from "next/navigation";
 
 const IssueAssigneeFilter = () => {
   const { data: users, error, isLoading } = useUser();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const [selectedUser, setSelectedUser] = useState(
+    searchParams.get("userId") || ""
+  );
+
+  useEffect(() => {
+    setSelectedUser(searchParams.get("userId") || "");
+  }, [searchParams]);
+
   if (isLoading) return <Skeleton height={"2rem"} />;
   if (error) return null;
-  console.log(users)
+
+
+  const handleValueChange = (userId: string) => {
+    setSelectedUser(userId)
+    const params = new URLSearchParams(searchParams);
+    params.delete("userId");
+    if (userId && userId !== "none") params.append("userId", userId);
+    if (searchParams.get("orderBy"))
+      params.append("orderBy", searchParams.get("orderBy")!);
+    const query = params.size ? "?" + params.toString() : "";
+    router.push(`/issues${query}`);
+    console.log(userId);
+  }
 
   return (
-    <Select.Root>
+    <Select.Root
+      value={selectedUser}
+      onValueChange={handleValueChange}>
       <Select.Trigger placeholder="Filter by Assignee" />
       <Select.Content>
         <Select.Group>
-          <Select.Label>Users</Select.Label>
+          <Select.Item value="none">Filter by Assignee</Select.Item>
           {users?.map((user) => (
             <Select.Item value={user.id} key={user.id}>
               {user.name}
