@@ -10,6 +10,7 @@ export interface IssuseQuery {
   sortOrder?: "asc" | "desc";
   page: string;
   pageSize: string;
+  userId: string;
 }
 interface Props {
   searchParams: IssuseQuery;

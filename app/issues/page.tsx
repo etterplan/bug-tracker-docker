@@ -11,7 +11,8 @@ const IssuesPage = async ({ searchParams }: { searchParams: IssuseQuery }) => {
   const status = statuses.includes(searchParams.status)
     ? searchParams.status
     : undefined;
-  const where = { status };
+  const userId = searchParams.userId;
+  const where = { status, assignedToUserId: userId };
   const orderBy = columnNames.includes(searchParams.orderBy)
     ? { [searchParams.orderBy]: searchParams.sortOrder || "asc" }
     : undefined;
