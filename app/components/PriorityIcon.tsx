@@ -1,5 +1,5 @@
 import { Priority } from "@prisma/client";
-import { Badge } from "@radix-ui/themes";
+import { Badge, Tooltip } from "@radix-ui/themes";
 import {
   RxArrowDown,
   RxDoubleArrowDown,
@@ -32,7 +32,11 @@ const statusMap: Record<
 
 const PriorityIcon = ({ priority }: { priority: Priority }) => {
   return (
-    <Badge color={statusMap[priority].color}>{statusMap[priority].icon}</Badge>
+    <Tooltip content={statusMap[priority].label}>
+      <Badge color={statusMap[priority].color}>
+        {statusMap[priority].icon}
+      </Badge>
+    </Tooltip>
   );
 };
 
