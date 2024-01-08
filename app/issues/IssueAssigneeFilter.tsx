@@ -1,9 +1,7 @@
 "use client"
 import React, { useState, useEffect } from 'react'
 import { Select } from "@radix-ui/themes";
-import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
-import { User } from "@prisma/client";
+import useUser from '../components/useUser';
 import { Skeleton } from "@/app/components";
 import { useRouter, useSearchParams } from "next/navigation";
 
@@ -54,13 +52,5 @@ const IssueAssigneeFilter = () => {
     </Select.Root>
   )
 }
-
-const useUser = () =>
-  useQuery<User[]>({
-    queryKey: ["users"],
-    queryFn: () => axios.get("/api/users").then((res) => res.data),
-    staleTime: 60 * 10000,
-    retry: 3,
-  });
 
 export default IssueAssigneeFilter

@@ -1,8 +1,8 @@
 "use client";
 import { Skeleton } from "@/app/components";
-import { Issue, User } from "@prisma/client";
+import { Issue } from "@prisma/client";
+import useUser from "@/app/components/useUser";
 import { Select } from "@radix-ui/themes";
-import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import toast, { Toaster } from "react-hot-toast";
@@ -21,8 +21,8 @@ const AssigneeSelect = ({ issue }: { issue: Issue }) => {
           userId === "unassigned"
             ? "OPEN"
             : userId
-            ? "IN_PROGRESS"
-            : issue.status,
+              ? "IN_PROGRESS"
+              : issue.status,
       };
 
       await axios.patch(`/api/issues/${issue.id}`, updatedIssue);
@@ -56,11 +56,4 @@ const AssigneeSelect = ({ issue }: { issue: Issue }) => {
   );
 };
 
-const useUser = () =>
-  useQuery<User[]>({
-    queryKey: ["users"],
-    queryFn: () => axios.get("/api/users").then((res) => res.data),
-    staleTime: 60 * 10000,
-    retry: 3,
-  });
 export default AssigneeSelect;
