@@ -12,15 +12,26 @@ datasource db {
 }
 
 model Issue {
-  id               Int      @id @default(autoincrement())
-  title            String   @db.VarChar(255)
-  description      String   @db.Text
-  status           Status   @default(OPEN)
-  priority         Priority @default(MEDIUM)
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
-  assignedToUserId String?  @db.VarChar(255)
-  assignedToUser   User?    @relation(fields: [assignedToUserId], references: [id])
+  id               Int       @id @default(autoincrement())
+  title            String    @db.VarChar(255)
+  description      String    @db.Text
+  status           Status    @default(OPEN)
+  priority         Priority  @default(MEDIUM)
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  assignedToUserId String?   @db.VarChar(255)
+  assignedToUser   User?     @relation(fields: [assignedToUserId], references: [id])
+  Comment          Comment[]
+}
+
+model Comment {
+  id        Int     @id @default(autoincrement())
+  text      String  @db.VarChar(255)
+  issue     Issue?  @relation(fields: [issueId], references: [id])
+  issueId   Int?
+  user      User?   @relation(fields: [userId, userEmail], references: [id, email])
+  userEmail String?
+  userId    String?
 }
 
 enum Status {
@@ -73,6 +84,9 @@ model User {
   accounts       Account[]
   sessions       Session[]
   assignedIssues Issue[]
+  Comment        Comment[]
+
+  @@unique([id, email])
 }
 
 model VerificationToken {
