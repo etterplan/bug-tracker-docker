@@ -7,8 +7,10 @@ import IssueAssigneeFilter from "./IssueAssigneeFilter";
 const IssuseAction = () => {
   return (
     <Flex justify="between">
-      <IssuseStatusFilter />
-      <IssueAssigneeFilter />
+      <Flex gap="2">
+        <IssuseStatusFilter />
+        <IssueAssigneeFilter />
+      </Flex>
       <Button>
         <Link href="/issues/new">New Issue</Link>
       </Button>
