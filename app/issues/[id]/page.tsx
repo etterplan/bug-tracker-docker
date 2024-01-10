@@ -35,10 +35,14 @@ const IssueDetailsPage = async ({ params }: Pros) => {
               </>
             )}
             <DeleteIssueButton issueId={issue.id} />
-            <AddCommentPopover />
           </Flex>
         </Box>
       )}
+      <Box>
+        <Flex direction="column" gap="4">
+          <AddCommentPopover issueId={issue.id} />
+        </Flex>
+      </Box>
     </Grid>
   );
 };
