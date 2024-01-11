@@ -9,45 +9,53 @@ import authOptions from "@/app/auth/authOptions";
 import AssigneeSelect from "./AssigneeSelect";
 import { cache } from "react";
 import AddCommentPopover from "./AddCommentPopover";
+import Comments from "./Comments";
 interface Pros {
   params: { id: string };
 }
 
-const fetchUser = cache((issueId: number) =>
-  prisma.issue.findUnique({ where: { id: issueId } })
+const fetchIssueWithComments = cache((issueId: number) =>
+  prisma.issue.findUnique({
+    where: { id: issueId },
+    include: { Comment: true }
+  })
 );
 const IssueDetailsPage = async ({ params }: Pros) => {
   const session = await getServerSession(authOptions);
-  const issue = await fetchUser(parseInt(params.id));
+  const issue = await fetchIssueWithComments(parseInt(params.id));
   if (!issue) notFound();
   return (
-    <Grid columns={{ initial: "1", sm: "5" }} gap="5">
-      <Box className="md:col-span-4">
-        <IssueDetails issue={issue} />
-      </Box>
-      {session && (
-        <Box>
-          <Flex direction="column" gap="4">
-            {issue.status !== "CLOSED" && (
-              <>
-                <AssigneeSelect issue={issue} />
-                <EditIssueButton issueId={issue.id} />
-              </>
-            )}
-            <DeleteIssueButton issueId={issue.id} />
-          </Flex>
+    <Flex direction="column" gap="5">
+      <Grid columns={{ initial: "1", sm: "5" }} gap="5">
+        <Box className="md:col-span-4">
+          <IssueDetails issue={issue} />
         </Box>
-      )}
-      <Box>
-        <Flex direction="column" gap="4">
+        {session && (
+          <Box>
+            <Flex direction="column" gap="4">
+              {issue.status !== "CLOSED" && (
+                <>
+                  <AssigneeSelect issue={issue} />
+                  <EditIssueButton issueId={issue.id} />
+                </>
+              )}
+              <DeleteIssueButton issueId={issue.id} />
+            </Flex>
+          </Box>)}
+      </Grid>
+      {session && (
+        <Flex>
           <AddCommentPopover issueId={issue.id} />
         </Flex>
-      </Box>
-    </Grid>
+      )}
+      <Grid columns={{ initial: "1", sm: "5" }} gap="5">
+        <Comments comments={issue.Comment} />
+      </Grid>
+    </Flex>
   );
 };
 export async function generateMetadata({ params }: Pros) {
-  const issue = await await fetchUser(parseInt(params.id));
+  const issue = await await fetchIssueWithComments(parseInt(params.id));
 
   return {
     title: issue?.title,
