@@ -71,7 +71,7 @@ const AddCommentPopover = ({ issueId }: { issueId: number }) => {
             {error && <ErrorMessage>{error}</ErrorMessage>}
             <Flex gap="2" mt="2" justify="end">
               <Popover.Close>
-                <Button size="1" onClick={handleComment}>
+                <Button size="1" onClick={handleComment} disabled={!comment}>
                   Comment
                 </Button>
               </Popover.Close>
