@@ -7,46 +7,50 @@ import axios from "axios";
 import { useState } from "react";
 import ErrorMessage from "@/app/components/ErrorMessage";
 import { commentSchema } from "@/app/validationSchema";
+import { useRouter } from 'next/navigation';
 
 const AddCommentPopover = ({ issueId }: { issueId: number }) => {
   const { status, data: session } = useSession();
   const [comment, setComment] = useState('');
   const [error, setError] = useState('');
+  const [open, setOpen] = useState(false);
+  const router = useRouter();
 
   const handleComment = async (event: React.MouseEvent) => {
-  
+    event.preventDefault();
+
     if (!session) {
       setError('You are not logged in.');
-      event.preventDefault();
       return;
     }
-  
+
     const validationResult = commentSchema.safeParse({ text: comment });
-  
+
     if (!validationResult.success) {
       if (validationResult.error.formErrors.fieldErrors.text) {
         setError(validationResult.error.formErrors.fieldErrors.text.join(', '));
       }
-      event.preventDefault();
       return;
     }
-  
+
     try {
+      setError('');
       await axios.post('/api/comments', {
         text: validationResult.data.text,
         issueId: issueId,
         userId: session.user?.id,
         userEmail: session.user?.email
       });
+      router.refresh();
+      setOpen(false);
     } catch (error) {
       setError('An unexpected error occurred.');
-      event.preventDefault();
     }
   }
 
   if (status === "loading") return <Skeleton height="2rem" width="13rem" />;
   return (
-    <Popover.Root>
+    <Popover.Root open={open} onOpenChange={setOpen}>
       <Popover.Trigger>
         <Button variant="soft">
           <ChatBubbleIcon width="16" height="16" />
@@ -70,11 +74,9 @@ const AddCommentPopover = ({ issueId }: { issueId: number }) => {
             />
             {error && <ErrorMessage>{error}</ErrorMessage>}
             <Flex gap="2" mt="2" justify="end">
-              <Popover.Close>
-                <Button size="1" onClick={handleComment} disabled={!comment}>
-                  Comment
-                </Button>
-              </Popover.Close>
+              <Button size="1" onClick={handleComment} disabled={!comment}>
+                Comment
+              </Button>
             </Flex>
           </Box>
         </Flex>
