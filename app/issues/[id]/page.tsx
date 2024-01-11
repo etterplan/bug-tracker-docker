@@ -8,6 +8,7 @@ import { getServerSession } from "next-auth";
 import authOptions from "@/app/auth/authOptions";
 import AssigneeSelect from "./AssigneeSelect";
 import { cache } from "react";
+import AddCommentPopover from "./AddCommentPopover";
 interface Pros {
   params: { id: string };
 }
@@ -37,6 +38,11 @@ const IssueDetailsPage = async ({ params }: Pros) => {
           </Flex>
         </Box>
       )}
+      <Box>
+        <Flex direction="column" gap="4">
+          <AddCommentPopover issueId={issue.id} />
+        </Flex>
+      </Box>
     </Grid>
   );
 };
