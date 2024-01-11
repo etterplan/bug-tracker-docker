@@ -25,11 +25,13 @@ model Issue {
 }
 
 model Comment {
-  id        Int     @id @default(autoincrement())
-  text      String  @db.VarChar(255)
-  issue     Issue?  @relation(fields: [issueId], references: [id])
+  id        Int      @id @default(autoincrement())
+  text      String   @db.VarChar(255)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  issue     Issue?   @relation(fields: [issueId], references: [id])
   issueId   Int?
-  user      User?   @relation(fields: [userId, userEmail], references: [id, email])
+  user      User?    @relation(fields: [userId, userEmail], references: [id, email])
   userEmail String?
   userId    String?
 }
