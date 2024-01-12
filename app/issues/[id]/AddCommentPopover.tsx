@@ -43,6 +43,7 @@ const AddCommentPopover = ({ issueId }: { issueId: number }) => {
         userImage: session.user?.image,
         userName: session.user?.name
       });
+      setComment('');
       router.refresh();
       setOpen(false);
     } catch (error) {
