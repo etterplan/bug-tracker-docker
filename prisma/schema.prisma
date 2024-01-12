@@ -31,9 +31,11 @@ model Comment {
   updatedAt DateTime @updatedAt
   issue     Issue?   @relation(fields: [issueId], references: [id])
   issueId   Int?
-  user      User?    @relation(fields: [userId, userEmail], references: [id, email])
+  user      User?    @relation(fields: [userId, userEmail, userImage, userName], references: [id, email, image, name])
   userEmail String?
   userId    String?
+  userImage String?
+  userName  String?
 }
 
 enum Status {
@@ -88,7 +90,7 @@ model User {
   assignedIssues Issue[]
   Comment        Comment[]
 
-  @@unique([id, email])
+  @@unique([id, email, image, name])
 }
 
 model VerificationToken {
