@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Invalid user" }, { status: 404 })
 
   const newComment = await prisma.comment.create({
-    data: { text: body.text, issueId: body.issueId, userId: body.userId, userEmail: body.userEmail }
+    data: { text: body.text, issueId: body.issueId, userId: body.userId, userEmail: body.userEmail, userImage: body.userImage, userName: body.userName }
   })
   return NextResponse.json(newComment, { status: 201 });
 }

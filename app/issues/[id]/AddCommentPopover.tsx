@@ -39,7 +39,9 @@ const AddCommentPopover = ({ issueId }: { issueId: number }) => {
         text: validationResult.data.text,
         issueId: issueId,
         userId: session.user?.id,
-        userEmail: session.user?.email
+        userEmail: session.user?.email,
+        userImage: session.user?.image,
+        userName: session.user?.name
       });
       router.refresh();
       setOpen(false);
