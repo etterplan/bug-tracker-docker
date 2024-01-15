@@ -43,13 +43,15 @@ const IssueDetailsPage = async ({ params }: Pros) => {
             </Flex>
           </Box>)}
       </Grid>
+      <Flex width="100%" justify="start">
+        {session && (
+          <Flex width="100%" justify="end" className="max-w-4xl">
+            <AddCommentPopover issueId={issue.id} />
+          </Flex>
+        )}
+      </Flex>
       <Flex width="100%" justify="center">
         <Flex direction="column" gap="5" className="max-w-2xl" justify="center">
-          {session && (
-            <Flex justify="end">
-              <AddCommentPopover issueId={issue.id} />
-            </Flex>
-          )}
           <Comments comments={issue.Comment} />
         </Flex>
       </Flex>
