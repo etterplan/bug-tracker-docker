@@ -1,6 +1,7 @@
 "use client"
 import { Box, Flex, Text, Card, Badge, Avatar, Strong, DropdownMenu, Button } from "@radix-ui/themes";
 import { DotsHorizontalIcon, PersonIcon } from "@radix-ui/react-icons"
+import { useSession } from "next-auth/react";
 
 interface Comment {
   id: number;
@@ -19,6 +20,8 @@ interface CommentsProps {
 }
 
 const Comments: React.FC<CommentsProps> = ({ comments }) => {
+  const { data: session } = useSession();
+
   return (
     <Flex direction="column" gap="6" justify="center">
       {[...comments].reverse().map((comment) => (
@@ -36,17 +39,19 @@ const Comments: React.FC<CommentsProps> = ({ comments }) => {
               <Badge color="blue">{comment.createdAt.toDateString()}</Badge>
             </Flex>
             <Flex>
-              <DropdownMenu.Root>
-                <DropdownMenu.Trigger>
-                  <Button variant="soft" size="1" color="blue">
-                    <DotsHorizontalIcon />
-                  </Button>
-                </DropdownMenu.Trigger>
-                <DropdownMenu.Content size="1">
-                  <DropdownMenu.Item>Edit</DropdownMenu.Item>
-                  <DropdownMenu.Item>Remove</DropdownMenu.Item>
-                </DropdownMenu.Content>
-              </DropdownMenu.Root>
+            {session && session.user && session.user.id === comment.userId && (
+                <DropdownMenu.Root>
+                  <DropdownMenu.Trigger>
+                    <Button variant="soft" size="1" color="blue">
+                      <DotsHorizontalIcon />
+                    </Button>
+                  </DropdownMenu.Trigger>
+                  <DropdownMenu.Content size="1">
+                    <DropdownMenu.Item>Edit</DropdownMenu.Item>
+                    <DropdownMenu.Item>Remove</DropdownMenu.Item>
+                  </DropdownMenu.Content>
+                </DropdownMenu.Root>
+              )}
             </Flex>
           </Flex>
           <Flex className="prose max-w-full pb-6" mt="4">
