@@ -1,7 +1,9 @@
 "use client"
-import { Box, Flex, Text, Card, Badge, Avatar, Strong, DropdownMenu, Button } from "@radix-ui/themes";
+import { Flex, Text, Badge, Avatar, Strong, DropdownMenu, Button } from "@radix-ui/themes";
 import { DotsHorizontalIcon, PersonIcon } from "@radix-ui/react-icons"
 import { useSession } from "next-auth/react";
+import axios from "axios";
+import { useRouter } from "next/navigation";
 
 interface Comment {
   id: number;
@@ -21,6 +23,18 @@ interface CommentsProps {
 
 const Comments: React.FC<CommentsProps> = ({ comments }) => {
   const { data: session } = useSession();
+  const route = useRouter();
+
+  const deleteComment = async (id: number, userId: string | null) => {
+    if (session && session.user && session.user.id && session.user.id === userId) {
+      try {
+        await axios.delete("/api/comments/" + id);
+        route.refresh();
+      } catch (error) {
+        console.error(error)
+      }
+    }
+  };
 
   return (
     <Flex direction="column" gap="6" justify="center">
@@ -39,7 +53,7 @@ const Comments: React.FC<CommentsProps> = ({ comments }) => {
               <Badge color="blue">{comment.createdAt.toDateString()}</Badge>
             </Flex>
             <Flex>
-            {session && session.user && session.user.id === comment.userId && (
+              {session && session.user && session.user.id === comment.userId && (
                 <DropdownMenu.Root>
                   <DropdownMenu.Trigger>
                     <Button variant="soft" size="1" color="blue">
@@ -48,7 +62,7 @@ const Comments: React.FC<CommentsProps> = ({ comments }) => {
                   </DropdownMenu.Trigger>
                   <DropdownMenu.Content size="1">
                     <DropdownMenu.Item>Edit</DropdownMenu.Item>
-                    <DropdownMenu.Item>Remove</DropdownMenu.Item>
+                    <DropdownMenu.Item onSelect={() => deleteComment(comment.id, comment.userId)}>Remove</DropdownMenu.Item>
                   </DropdownMenu.Content>
                 </DropdownMenu.Root>
               )}
