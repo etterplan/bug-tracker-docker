@@ -25,7 +25,7 @@ const IssueDetailsPage = async ({ params }: Pros) => {
   const issue = await fetchIssueWithComments(parseInt(params.id));
   if (!issue) notFound();
   return (
-    <Flex direction="column" gap="5">
+    <Flex direction="column" gap="5" justify="center">
       <Grid columns={{ initial: "1", sm: "5" }} gap="5">
         <Box className="md:col-span-4">
           <IssueDetails issue={issue} />
@@ -43,14 +43,18 @@ const IssueDetailsPage = async ({ params }: Pros) => {
             </Flex>
           </Box>)}
       </Grid>
-      {session && (
-        <Flex>
-          <AddCommentPopover issueId={issue.id} />
+      <Flex width="100%" justify="start">
+        {session && (
+          <Flex width="100%" justify="end" className="max-w-4xl">
+            <AddCommentPopover issueId={issue.id} />
+          </Flex>
+        )}
+      </Flex>
+      <Flex width="100%" justify="center">
+        <Flex direction="column" gap="5" className="max-w-2xl" justify="center">
+          <Comments comments={issue.Comment} />
         </Flex>
-      )}
-      <Grid columns={{ initial: "1", sm: "5" }} gap="5">
-        <Comments comments={issue.Comment} />
-      </Grid>
+      </Flex>
     </Flex>
   );
 };
