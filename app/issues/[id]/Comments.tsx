@@ -55,7 +55,7 @@ const Comments: React.FC<CommentsProps> = ({ comments }) => {
     <Flex direction="column" gap="6" justify="center">
       {[...comments].reverse().map((comment) => (
         <Flex key={comment.id} className="border-b-2 border-gray-200" direction="column" width="100%">
-          <Flex justify="between">
+          <Flex justify="between" gap="3">
             <Flex align="center" gap="3">
               <Avatar
                 size="2"
@@ -66,7 +66,7 @@ const Comments: React.FC<CommentsProps> = ({ comments }) => {
               <Text size="1"><Strong>{comment.userName}</Strong></Text>
               <Badge color="blue">{comment.createdAt.toDateString()}</Badge>
             </Flex>
-            <Flex>
+            <Flex align="center">
               {session && session.user && session.user.id === comment.userId && (
                 <DropdownMenu.Root>
                   <DropdownMenu.Trigger>

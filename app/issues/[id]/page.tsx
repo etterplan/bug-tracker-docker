@@ -51,7 +51,7 @@ const IssueDetailsPage = async ({ params }: Pros) => {
         )}
       </Flex>
       <Flex width="100%" justify="center">
-        <Flex direction="column" gap="5" className="max-w-2xl" justify="center">
+        <Flex direction="column" gap="5" className="max-w-2xl min-w-[30vw]" justify="center">
           <Comments comments={issue.Comment} />
         </Flex>
       </Flex>
