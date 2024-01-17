@@ -43,18 +43,18 @@ const IssueDetailsPage = async ({ params }: Pros) => {
             </Flex>
           </Box>)}
       </Grid>
-      <Flex width="100%" justify="start">
-        {session && (
-          <Flex width="100%" justify="end" className="max-w-4xl">
-            <AddCommentPopover issueId={issue.id} />
+      <Grid columns={{ initial: "1", sm: "5" }} gap="5">
+        <Box className="md:col-span-4">
+          {session && (
+            <Flex width="100%" justify="end" className="mb-4">
+              <AddCommentPopover issueId={issue.id} />
+            </Flex>
+          )}
+          <Flex direction="column" gap="5" justify="center">
+            <Comments comments={issue.Comment} />
           </Flex>
-        )}
-      </Flex>
-      <Flex width="100%" justify="center">
-        <Flex direction="column" gap="5" className="max-w-2xl min-w-[30vw]" justify="center">
-          <Comments comments={issue.Comment} />
-        </Flex>
-      </Flex>
+        </Box>
+      </Grid>
     </Flex>
   );
 };
