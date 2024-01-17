@@ -92,7 +92,7 @@ const Comments: React.FC<CommentsProps> = ({ comments }) => {
                 </Flex>
               </Flex>
             ) : (
-              <Text size="1">{comment.text}</Text>
+              <Text size="1" className="overflow-ellipsis overflow-clip">{comment.text}</Text>
             )}
           </Flex>
         </Flex>
