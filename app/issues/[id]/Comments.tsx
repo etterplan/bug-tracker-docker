@@ -1,5 +1,5 @@
 "use client"
-import { Flex, Text, Badge, Avatar, Strong, DropdownMenu, Button, TextArea, Box } from "@radix-ui/themes";
+import { Flex, Text, Badge, Avatar, Strong, DropdownMenu, Button, TextArea, AlertDialog } from "@radix-ui/themes";
 import { DotsHorizontalIcon, PersonIcon } from "@radix-ui/react-icons"
 import { useSession } from "next-auth/react";
 import axios from "axios";
@@ -27,16 +27,19 @@ const Comments: React.FC<CommentsProps> = ({ comments }) => {
   const route = useRouter();
   const [editing, setEditing] = useState<number | null>(null);
   const [editText, setEditText] = useState('');
+  const [openDialog, setOpenDialog] = useState(false);
+  const [selectedComment, setSelectedComment] = useState<Comment | null>(null);
 
-  const deleteComment = async (id: number, userId: string | null) => {
-    if (session && session.user && session.user.id && session.user.id === userId) {
+  const deleteComment = async () => {
+    if (selectedComment && session && session.user && session.user.id && session.user.id === selectedComment.userId) {
       try {
-        await axios.delete("/api/comments/" + id);
+        await axios.delete("/api/comments/" + selectedComment.id);
         route.refresh();
       } catch (error) {
         console.error(error)
       }
     }
+    setOpenDialog(false);
   };
 
   const editComment = async (id: number, userId: string | null) => {
@@ -76,7 +79,7 @@ const Comments: React.FC<CommentsProps> = ({ comments }) => {
                   </DropdownMenu.Trigger>
                   <DropdownMenu.Content size="1">
                     <DropdownMenu.Item color="blue" onSelect={() => { setEditing(comment.id); setEditText(comment.text); }}>Edit</DropdownMenu.Item>
-                    <DropdownMenu.Item color="red"onSelect={() => deleteComment(comment.id, comment.userId)}>Remove</DropdownMenu.Item>
+                    <DropdownMenu.Item color="red" onSelect={() => { setSelectedComment(comment); setOpenDialog(true); }}>Remove</DropdownMenu.Item>
                   </DropdownMenu.Content>
                 </DropdownMenu.Root>
               )}
@@ -95,6 +98,25 @@ const Comments: React.FC<CommentsProps> = ({ comments }) => {
               <Text size="1" className="overflow-ellipsis overflow-clip">{comment.text}</Text>
             )}
           </Flex>
+          <AlertDialog.Root open={openDialog && selectedComment?.id === comment.id} onOpenChange={setOpenDialog}>
+            <AlertDialog.Trigger>
+              <Button style={{ display: 'none' }}></Button>
+            </AlertDialog.Trigger>
+            <AlertDialog.Content>
+              <AlertDialog.Title>Confirm Deletion</AlertDialog.Title>
+              <AlertDialog.Description>
+                Are you sure you want to delete this comment? This action cannot be undone.
+              </AlertDialog.Description>
+              <Flex gap="3" mt="4" justify="end">
+                <AlertDialog.Cancel>
+                  <Button variant="soft" color="gray">Cancel</Button>
+                </AlertDialog.Cancel>
+                <AlertDialog.Action>
+                  <Button color="red" onClick={deleteComment}>Delete Comment</Button>
+                </AlertDialog.Action>
+              </Flex>
+            </AlertDialog.Content>
+          </AlertDialog.Root>
         </Flex>
       ))}
     </Flex>
