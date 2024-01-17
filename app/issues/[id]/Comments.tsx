@@ -75,8 +75,8 @@ const Comments: React.FC<CommentsProps> = ({ comments }) => {
                     </Button>
                   </DropdownMenu.Trigger>
                   <DropdownMenu.Content size="1">
-                    <DropdownMenu.Item onSelect={() => { setEditing(comment.id); setEditText(comment.text); }}>Edit</DropdownMenu.Item>
-                    <DropdownMenu.Item onSelect={() => deleteComment(comment.id, comment.userId)}>Remove</DropdownMenu.Item>
+                    <DropdownMenu.Item color="blue" onSelect={() => { setEditing(comment.id); setEditText(comment.text); }}>Edit</DropdownMenu.Item>
+                    <DropdownMenu.Item color="red"onSelect={() => deleteComment(comment.id, comment.userId)}>Remove</DropdownMenu.Item>
                   </DropdownMenu.Content>
                 </DropdownMenu.Root>
               )}
@@ -87,8 +87,8 @@ const Comments: React.FC<CommentsProps> = ({ comments }) => {
               <Flex width="100%" direction="column" gap="2">
                 <TextArea size="2" value={editText} onChange={(e) => setEditText(e.target.value)} />
                 <Flex width="100%" gap="6" justify="end">
-                  <Button onClick={() => setEditing(null)}>Cancel</Button>
-                  <Button onClick={() => editComment(comment.id, comment.userId)}>Save</Button>
+                  <Button color="red" onClick={() => setEditing(null)}>Cancel</Button>
+                  <Button color="blue" onClick={() => editComment(comment.id, comment.userId)}>Save Edit</Button>
                 </Flex>
               </Flex>
             ) : (
