@@ -29,17 +29,18 @@ const Comments: React.FC<CommentsProps> = ({ comments }) => {
   const [editText, setEditText] = useState('');
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedComment, setSelectedComment] = useState<Comment | null>(null);
+  const [error, setError] = useState('')
 
   const deleteComment = async () => {
     if (selectedComment && session && session.user && session.user.id && session.user.id === selectedComment.userId) {
       try {
         await axios.delete("/api/comments/" + selectedComment.id);
+        setOpenDialog(false);
         route.refresh();
       } catch (error) {
         console.error(error)
       }
     }
-    setOpenDialog(false);
   };
 
   const editComment = async (id: number, userId: string | null) => {
@@ -49,7 +50,7 @@ const Comments: React.FC<CommentsProps> = ({ comments }) => {
         setEditing(null);
         route.refresh();
       } catch (error) {
-        console.error(error)
+        setError((error as Error).message);
       }
     }
   };
@@ -78,7 +79,7 @@ const Comments: React.FC<CommentsProps> = ({ comments }) => {
                     </Button>
                   </DropdownMenu.Trigger>
                   <DropdownMenu.Content size="1">
-                    <DropdownMenu.Item color="blue" onSelect={() => { setEditing(comment.id); setEditText(comment.text); }}>Edit</DropdownMenu.Item>
+                    <DropdownMenu.Item color="blue" onSelect={() => { setEditing(comment.id); setEditText(comment.text); setError('');}}>Edit</DropdownMenu.Item>
                     <DropdownMenu.Item color="red" onSelect={() => { setSelectedComment(comment); setOpenDialog(true); }}>Remove</DropdownMenu.Item>
                   </DropdownMenu.Content>
                 </DropdownMenu.Root>
@@ -89,9 +90,14 @@ const Comments: React.FC<CommentsProps> = ({ comments }) => {
             {editing === comment.id ? (
               <Flex width="100%" direction="column" gap="2">
                 <TextArea size="2" value={editText} onChange={(e) => setEditText(e.target.value)} />
-                <Flex width="100%" gap="6" justify="end">
-                  <Button color="red" onClick={() => setEditing(null)}>Cancel</Button>
-                  <Button color="blue" onClick={() => editComment(comment.id, comment.userId)}>Save Edit</Button>
+                <Flex width="100%" gap="2" justify="end">
+                  <Flex>
+                    <Text size="1" color="red">{error}</Text>
+                  </Flex>
+                  <Flex width="100%" gap="6" justify="end">
+                    <Button color="red" onClick={() => setEditing(null)}>Cancel</Button>
+                    <Button color="blue" onClick={() => editComment(comment.id, comment.userId)}>Save Edit</Button>
+                  </Flex>
                 </Flex>
               </Flex>
             ) : (
@@ -109,7 +115,7 @@ const Comments: React.FC<CommentsProps> = ({ comments }) => {
               </AlertDialog.Description>
               <Flex gap="3" mt="4" justify="end">
                 <AlertDialog.Cancel>
-                  <Button variant="soft" color="gray">Cancel</Button>
+                  <Button variant="soft" color="gray" onClick={() => setOpenDialog(false)}>Cancel</Button>
                 </AlertDialog.Cancel>
                 <AlertDialog.Action>
                   <Button color="red" onClick={deleteComment}>Delete Comment</Button>
