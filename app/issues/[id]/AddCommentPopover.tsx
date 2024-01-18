@@ -55,7 +55,7 @@ const AddCommentPopover = ({ issueId }: { issueId: number }) => {
   return (
     <Popover.Root open={open} onOpenChange={setOpen}>
       <Popover.Trigger>
-        <Button variant="soft">
+        <Button variant="solid" color="blue">
           <ChatBubbleIcon width="16" height="16" />
           Add Comment
         </Button>
@@ -74,10 +74,11 @@ const AddCommentPopover = ({ issueId }: { issueId: number }) => {
               style={{ height: 80 }}
               value={comment}
               onChange={(e) => setComment(e.target.value)}
+              color="blue"
             />
             {error && <ErrorMessage>{error}</ErrorMessage>}
             <Flex gap="2" mt="2" justify="end">
-              <Button size="1" onClick={handleComment} disabled={!comment}>
+              <Button size="1" onClick={handleComment} disabled={!comment} color="blue">
                 Comment
               </Button>
             </Flex>
