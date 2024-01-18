@@ -80,7 +80,7 @@ const Comments: React.FC<CommentsProps> = ({ comments }) => {
                   </DropdownMenu.Trigger>
                   <DropdownMenu.Content size="1">
                     <DropdownMenu.Item color="blue" onSelect={() => { setEditing(comment.id); setEditText(comment.text); setError('');}}>Edit</DropdownMenu.Item>
-                    <DropdownMenu.Item color="red" onSelect={() => { setSelectedComment(comment); setOpenDialog(true); }}>Remove</DropdownMenu.Item>
+                    <DropdownMenu.Item color="red"  onSelect={() => { setSelectedComment(comment); setOpenDialog(true); }}>Remove</DropdownMenu.Item>
                   </DropdownMenu.Content>
                 </DropdownMenu.Root>
               )}
@@ -95,7 +95,7 @@ const Comments: React.FC<CommentsProps> = ({ comments }) => {
                     <Text size="1" color="red">{error}</Text>
                   </Flex>
                   <Flex width="100%" gap="6" justify="end">
-                    <Button color="red" onClick={() => setEditing(null)}>Cancel</Button>
+                    <Button variant="soft" color="gray" onClick={() => setEditing(null)}>Cancel</Button>
                     <Button color="blue" onClick={() => editComment(comment.id, comment.userId)}>Save Edit</Button>
                   </Flex>
                 </Flex>
