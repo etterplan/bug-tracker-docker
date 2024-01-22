@@ -11,6 +11,7 @@ export interface IssuseQuery {
   page: string;
   pageSize: string;
   userId: string;
+  search: string;
 }
 interface Props {
   searchParams: IssuseQuery;
