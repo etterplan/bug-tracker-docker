@@ -30,6 +30,7 @@ const Comments: React.FC<CommentsProps> = ({ comments }) => {
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedComment, setSelectedComment] = useState<Comment | null>(null);
   const [error, setError] = useState('')
+  const [isPatching, setIsPatching] = useState(false);
 
   const deleteComment = async () => {
     if (selectedComment && session && session.user && session.user.id && session.user.id === selectedComment.userId) {
@@ -47,10 +48,13 @@ const Comments: React.FC<CommentsProps> = ({ comments }) => {
     if (session && session.user && session.user.id && session.user.id === userId) {
       try {
         await axios.patch("/api/comments/" + id, { text: editText });
+        setIsPatching(true);
         setEditing(null);
         route.refresh();
       } catch (error) {
         setError((error as Error).message);
+      }finally {
+        setIsPatching(false);
       }
     }
   };
@@ -96,7 +100,7 @@ const Comments: React.FC<CommentsProps> = ({ comments }) => {
                   </Flex>
                   <Flex width="100%" gap="6" justify="end">
                     <Button variant="soft" color="gray" onClick={() => setEditing(null)}>Cancel</Button>
-                    <Button color="blue" onClick={() => editComment(comment.id, comment.userId)}>Save Edit</Button>
+                    <Button color="blue" onClick={() => editComment(comment.id, comment.userId)} disabled={isPatching}>Save Edit</Button>
                   </Flex>
                 </Flex>
               </Flex>
