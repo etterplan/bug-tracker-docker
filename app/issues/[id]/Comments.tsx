@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useState } from 'react';
+import { commentSchema } from "@/app/validationSchema";
 
 interface Comment {
   id: number;
@@ -46,15 +47,25 @@ const Comments: React.FC<CommentsProps> = ({ comments }) => {
 
   const editComment = async (id: number, userId: string | null) => {
     if (session && session.user && session.user.id && session.user.id === userId) {
-      try {
-        await axios.patch("/api/comments/" + id, { text: editText });
-        setIsPatching(true);
-        setEditing(null);
-        route.refresh();
-      } catch (error) {
-        setError((error as Error).message);
-      }finally {
-        setIsPatching(false);
+
+      const validationResult = commentSchema.safeParse({ text: editText });
+
+      if (!validationResult.success) {
+        if (validationResult.error.formErrors.fieldErrors.text) {
+          setError(validationResult.error.formErrors.fieldErrors.text.join(', '));
+        }
+        return;
+      } else {
+        try {
+          await axios.patch("/api/comments/" + id, { text: editText });
+          setIsPatching(true);
+          setEditing(null);
+          route.refresh();
+        } catch (error) {
+          setError((error as Error).message);
+        } finally {
+          setIsPatching(false);
+        }
       }
     }
   };
@@ -83,8 +94,8 @@ const Comments: React.FC<CommentsProps> = ({ comments }) => {
                     </Button>
                   </DropdownMenu.Trigger>
                   <DropdownMenu.Content size="1">
-                    <DropdownMenu.Item color="blue" onSelect={() => { setEditing(comment.id); setEditText(comment.text); setError('');}}>Edit</DropdownMenu.Item>
-                    <DropdownMenu.Item color="red"  onSelect={() => { setSelectedComment(comment); setOpenDialog(true); }}>Remove</DropdownMenu.Item>
+                    <DropdownMenu.Item color="blue" onSelect={() => { setEditing(comment.id); setEditText(comment.text); setError(''); }}>Edit</DropdownMenu.Item>
+                    <DropdownMenu.Item color="red" onSelect={() => { setSelectedComment(comment); setOpenDialog(true); }}>Remove</DropdownMenu.Item>
                   </DropdownMenu.Content>
                 </DropdownMenu.Root>
               )}
