@@ -14,6 +14,7 @@ const AddCommentPopover = ({ issueId }: { issueId: number }) => {
   const [comment, setComment] = useState('');
   const [error, setError] = useState('');
   const [open, setOpen] = useState(false);
+  const [isPosting, setIsPosting] = useState(false);
   const router = useRouter();
 
   const handleComment = async (event: React.MouseEvent) => {
@@ -35,6 +36,7 @@ const AddCommentPopover = ({ issueId }: { issueId: number }) => {
 
     try {
       setError('');
+      setIsPosting(true);
       await axios.post('/api/comments', {
         text: validationResult.data.text,
         issueId: issueId,
@@ -48,6 +50,8 @@ const AddCommentPopover = ({ issueId }: { issueId: number }) => {
       setOpen(false);
     } catch (error) {
       setError('An unexpected error occurred.');
+    }finally {
+      setIsPosting(false);
     }
   }
 
@@ -78,7 +82,7 @@ const AddCommentPopover = ({ issueId }: { issueId: number }) => {
             />
             {error && <ErrorMessage>{error}</ErrorMessage>}
             <Flex gap="2" mt="2" justify="end">
-              <Button size="1" onClick={handleComment} disabled={!comment} color="blue">
+              <Button size="1" onClick={handleComment} disabled={!comment || isPosting} color="blue">
                 Comment
               </Button>
             </Flex>
