@@ -4,7 +4,6 @@ import { Metadata } from "next";
 import IssueChart from "./IssueChart";
 import IssueSummery from "./IssueSummery";
 import LatestIssues from "./LatestIssues";
-import IssueCard from "./IssueCard";
 
 export default async function Home() {
   const open = await prisma.issue.count({ where: { status: "OPEN" } });
@@ -12,7 +11,6 @@ export default async function Home() {
   const inProgress = await prisma.issue.count({
     where: { status: "IN_PROGRESS" },
   });
-  const issues = await prisma.issue.findMany({})
   return (
     <Grid columns={{ initial: "1", md: "2" }} gap="5">
       <Flex direction="column" gap="5">
@@ -21,9 +19,6 @@ export default async function Home() {
       </Flex>
       <Flex direction="column" gap="5">
         <LatestIssues />
-      </Flex>
-      <Flex>
-        <IssueCard issues={issues}/>
       </Flex>
     </Grid>
   );
