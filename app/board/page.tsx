@@ -31,7 +31,9 @@ export default async function Board() {
     },
   });
   return (
-    <BoardLayout openIssues={openIssues} inProgressIssues={inProgressIssues} closedIssues={closedIssues} />
+    <Grid columns={{ initial: "1", sm: "3" }} gap="5">
+      <BoardLayout openIssues={openIssues} inProgressIssues={inProgressIssues} closedIssues={closedIssues}/>
+    </Grid>
   )
 }
 
