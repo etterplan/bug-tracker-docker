@@ -14,7 +14,7 @@ type BoardLayoutProps = {
 
 const BoardLayout: React.FC<BoardLayoutProps> = ({ openIssues, inProgressIssues, closedIssues }) => {
   return (
-    <Grid columns={{ initial: "1", sm: "3" }} gap="5">
+    <>
       <Box>
         <Text>OPEN</Text>
         {openIssues.map(issue => (
@@ -33,7 +33,7 @@ const BoardLayout: React.FC<BoardLayoutProps> = ({ openIssues, inProgressIssues,
           <IssueCard key={issue.id} issue={issue} />
         ))}
       </Box>
-    </Grid>
+    </>
   )
 }
 
