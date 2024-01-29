@@ -73,6 +73,7 @@ const NavLinks = () => {
   const links = [
     { lable: "Dashboard", href: "/" },
     { lable: "Issues", href: "/issues" },
+    { lable: "Board", href: "/board" },
   ];
   return (
     <ul className="flex space-x-6">
