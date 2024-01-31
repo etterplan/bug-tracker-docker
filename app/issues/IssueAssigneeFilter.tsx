@@ -31,7 +31,6 @@ const IssueAssigneeFilter = () => {
       params.append("orderBy", searchParams.get("orderBy")!);
     const query = params.size ? "?" + params.toString() : "";
     router.push(`/issues${query}`);
-    console.log(userId);
   }
 
   return (
