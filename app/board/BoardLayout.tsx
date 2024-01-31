@@ -3,6 +3,9 @@ import { Issue as PrismaIssue, User } from "@prisma/client";
 import { Text } from "@radix-ui/themes";
 import IssueCard from "./IssueCard";
 import DroppableBox from "./DroppableBox";
+import axios from "axios";
+import toast, { Toaster } from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 type Issue = PrismaIssue & {
   assignedToUser: User | null;
@@ -15,9 +18,20 @@ type BoardLayoutProps = {
 };
 
 const BoardLayout: React.FC<BoardLayoutProps> = ({ openIssues, inProgressIssues, closedIssues }) => {
-  const onDropIssue = (issueId: string, status: string) => {
-    // TODO
-    console.log(`change issue ${issueId}'s status to: ${status}`)
+  const router = useRouter();
+  const onDropIssue = async (issueId: string, status: string) => {
+    try {
+      const validStatuses = ["OPEN", "IN_PROGRESS", "CLOSED"];
+      if (validStatuses.includes(status)) {
+        const checkedStatus = {
+          status: status
+        }
+        await axios.patch(`/api/issues/${issueId}`, checkedStatus);
+        router.refresh();
+      }
+    } catch (error) {
+      toast.error("Changes could not be saved.");
+    }
   };
   return (
     <>
@@ -39,6 +53,7 @@ const BoardLayout: React.FC<BoardLayoutProps> = ({ openIssues, inProgressIssues,
           <IssueCard key={issue.id} issue={issue} />
         ))}
       </DroppableBox>
+      <Toaster />
     </>
   )
 }
