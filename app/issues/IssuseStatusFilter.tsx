@@ -21,20 +21,21 @@ const IssuseStatusFilter = () => {
     setSelectedStatus(searchParams.get("status") || "");
   }, [searchParams]);
 
+  const onValueChange = (status: string) => {
+    const params = new URLSearchParams(searchParams);
+    params.delete("status");
+    if (status) params.append("status", status);
+    if (searchParams.get("orderBy"))
+      params.append("orderBy", searchParams.get("orderBy")!);
+    if (params.get("status") !== selectedStatus) {
+      params.set("page", "1");
+    }
+    const query = params.size ? "?" + params.toString() : "";
+    router.push(`/issues${query}`);
+  };
+
   return (
-    <Select.Root
-      value={selectedStatus}
-      onValueChange={(status) => {
-        setSelectedStatus(status);
-        const parms = new URLSearchParams(searchParams);
-        parms.delete("status");
-        if (status) parms.append("status", status);
-        if (searchParams.get("orderBy"))
-          parms.append("orderBy", searchParams.get("orderBy")!);
-        const query = parms.size ? "?" + parms.toString() : "";
-        router.push(`/issues${query}`);
-      }}
-    >
+    <Select.Root value={selectedStatus} onValueChange={onValueChange}>
       <Select.Trigger placeholder="Filter by status" />
       <Select.Content>
         <Select.Group>
