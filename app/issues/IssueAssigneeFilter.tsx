@@ -29,6 +29,8 @@ const IssueAssigneeFilter = () => {
     if (userId && userId !== "none") params.append("userId", userId);
     if (searchParams.get("orderBy"))
       params.append("orderBy", searchParams.get("orderBy")!);
+    if (params.get("userId") !== selectedUser) 
+      params.set("page", "1");
     const query = params.size ? "?" + params.toString() : "";
     router.push(`/issues${query}`);
   }
