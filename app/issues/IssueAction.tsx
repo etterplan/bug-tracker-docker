@@ -1,15 +1,15 @@
 import { Button, Flex } from "@radix-ui/themes";
 import Link from "next/link";
 import React from "react";
-import IssuseStatusFilter from "./IssuseStatusFilter";
+import IssueStatusFilter from "./IssueStatusFilter";
 import IssueAssigneeFilter from "./IssueAssigneeFilter";
 import IssueSearch from "./IssueSearch";
 
-const IssuseAction = () => {
+const IssueAction = () => {
   return (
     <div className="flex flex-wrap justify-center sm:justify-between gap-3">
       <Flex wrap="wrap" gap="3" justify="center" align="center">
-        <IssuseStatusFilter />
+        <IssueStatusFilter />
         <IssueAssigneeFilter />
       </Flex>
       <Flex wrap="wrap" gap="3" justify="center" align="center">
@@ -22,4 +22,4 @@ const IssuseAction = () => {
   );
 };
 
-export default IssuseAction;
+export default IssueAction;

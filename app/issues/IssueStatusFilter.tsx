@@ -5,12 +5,11 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 const statuses: { label: string; value?: Status }[] = [
-  { label: "All" },
   { label: "Open", value: "OPEN" },
   { label: "In Progress", value: "IN_PROGRESS" },
   { label: "Closed", value: "CLOSED" },
 ];
-const IssuseStatusFilter = () => {
+const IssueStatusFilter = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [selectedStatus, setSelectedStatus] = useState(
@@ -21,25 +20,26 @@ const IssuseStatusFilter = () => {
     setSelectedStatus(searchParams.get("status") || "");
   }, [searchParams]);
 
+  const onValueChange = (status: string) => {
+    const params = new URLSearchParams(searchParams);
+    params.delete("status");
+    if (status && status !== "none") params.append("status", status);
+    if (searchParams.get("orderBy"))
+      params.append("orderBy", searchParams.get("orderBy")!);
+    if (params.get("status") !== selectedStatus)
+      params.set("page", "1")
+    const query = params.size ? "?" + params.toString() : "";
+    router.push(`/issues${query}`);
+  };
+
   return (
-    <Select.Root
-      value={selectedStatus}
-      onValueChange={(status) => {
-        setSelectedStatus(status);
-        const parms = new URLSearchParams(searchParams);
-        parms.delete("status");
-        if (status) parms.append("status", status);
-        if (searchParams.get("orderBy"))
-          parms.append("orderBy", searchParams.get("orderBy")!);
-        const query = parms.size ? "?" + parms.toString() : "";
-        router.push(`/issues${query}`);
-      }}
-    >
-      <Select.Trigger placeholder="Filter by status" />
+    <Select.Root value={selectedStatus} onValueChange={onValueChange}>
+      <Select.Trigger placeholder="Filter by Status" />
       <Select.Content>
         <Select.Group>
+          <Select.Item value="none">Filter by Status</Select.Item>
           {statuses.map((status) => (
-            <Select.Item value={status.value || "ALL"} key={status.label}>
+            <Select.Item value={status.value || ""} key={status.label}>
               {status.label}
             </Select.Item>
           ))}
@@ -49,4 +49,4 @@ const IssuseStatusFilter = () => {
   );
 };
 
-export default IssuseStatusFilter;
+export default IssueStatusFilter;

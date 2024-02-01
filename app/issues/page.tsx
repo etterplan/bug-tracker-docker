@@ -4,7 +4,7 @@ import { Flex } from "@radix-ui/themes";
 import { Metadata } from "next";
 import Pagination from "../components/Pagination";
 import IssueTable, { IssuseQuery, columnNames } from "./IssueTable";
-import IssuseAction from "./IssuseAction";
+import IssueAction from "./IssueAction";
 
 const IssuesPage = async ({ searchParams }: { searchParams: IssuseQuery }) => {
   const statuses = Object.values(Status);
@@ -12,13 +12,13 @@ const IssuesPage = async ({ searchParams }: { searchParams: IssuseQuery }) => {
     ? searchParams.status
     : undefined;
   const userId = searchParams.userId;
+  const searchText = searchParams.search || '';
   const where = { status, assignedToUserId: userId };
   const orderBy = columnNames.includes(searchParams.orderBy)
     ? { [searchParams.orderBy]: searchParams.sortOrder || "asc" }
     : undefined;
   const page = parseInt(searchParams.page) || 1;
   const pageSize = parseInt(searchParams.pageSize) || 10;
-  const searchText = searchParams.search || '';
   const issues = await prisma.issue.findMany({
     where: {
       ...where,
@@ -30,10 +30,17 @@ const IssuesPage = async ({ searchParams }: { searchParams: IssuseQuery }) => {
     skip: (page - 1) * pageSize,
     take: pageSize,
   });
-  const issueCount = await prisma.issue.count({ where: where });
+  const issueCount = await prisma.issue.count({
+    where: {
+      ...where,
+      title: {
+        contains: searchText,
+      },
+    },
+  });
   return (
     <Flex direction="column" gap="3">
-      <IssuseAction />
+      <IssueAction />
       <IssueTable searchParams={searchParams} issues={issues} />
       <Pagination
         itemsCount={issueCount}

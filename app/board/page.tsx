@@ -3,10 +3,12 @@ import prisma from "@/prisma/client";
 import { Metadata } from "next";
 import BoardLayout from "./BoardLayout";
 
+export const dynamic = "force-dynamic";
+
 export default async function Board() {
   const openIssues = await prisma.issue.findMany({
     where: {
-      status: 'OPEN'
+      status: "OPEN",
     },
     include: {
       assignedToUser: true,
@@ -15,7 +17,7 @@ export default async function Board() {
 
   const inProgressIssues = await prisma.issue.findMany({
     where: {
-      status: 'IN_PROGRESS'
+      status: "IN_PROGRESS",
     },
     include: {
       assignedToUser: true,
@@ -24,7 +26,7 @@ export default async function Board() {
 
   const closedIssues = await prisma.issue.findMany({
     where: {
-      status: 'CLOSED'
+      status: "CLOSED",
     },
     include: {
       assignedToUser: true,
@@ -32,9 +34,13 @@ export default async function Board() {
   });
   return (
     <Grid columns={{ initial: "1", sm: "3" }} gap="5">
-      <BoardLayout openIssues={openIssues} inProgressIssues={inProgressIssues} closedIssues={closedIssues}/>
+      <BoardLayout
+        openIssues={openIssues}
+        inProgressIssues={inProgressIssues}
+        closedIssues={closedIssues}
+      />
     </Grid>
-  )
+  );
 }
 
 export const metadata: Metadata = {
