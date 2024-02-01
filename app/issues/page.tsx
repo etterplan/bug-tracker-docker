@@ -4,7 +4,7 @@ import { Flex } from "@radix-ui/themes";
 import { Metadata } from "next";
 import Pagination from "../components/Pagination";
 import IssueTable, { IssuseQuery, columnNames } from "./IssueTable";
-import IssuseAction from "./IssuseAction";
+import IssueAction from "./IssueAction";
 
 const IssuesPage = async ({ searchParams }: { searchParams: IssuseQuery }) => {
   const statuses = Object.values(Status);
@@ -33,7 +33,7 @@ const IssuesPage = async ({ searchParams }: { searchParams: IssuseQuery }) => {
   const issueCount = await prisma.issue.count({ where: where });
   return (
     <Flex direction="column" gap="3">
-      <IssuseAction />
+      <IssueAction />
       <IssueTable searchParams={searchParams} issues={issues} />
       <Pagination
         itemsCount={issueCount}

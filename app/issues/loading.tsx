@@ -1,12 +1,12 @@
 import { Flex, Table } from "@radix-ui/themes";
 import { Skeleton } from "@/app/components";
-import IssuseAction from "./IssuseAction";
+import IssueAction from "./IssueAction";
 
 const LoadingIssuesPage = () => {
   const issues = [1, 2, 3, 4, 5];
   return (
     <Flex direction="column" gap="2">
-      <IssuseAction />
+      <IssueAction />
       <Table.Root variant="surface">
         <Table.Header>
           <Table.Row>
