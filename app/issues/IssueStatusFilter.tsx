@@ -10,7 +10,7 @@ const statuses: { label: string; value?: Status }[] = [
   { label: "In Progress", value: "IN_PROGRESS" },
   { label: "Closed", value: "CLOSED" },
 ];
-const IssuseStatusFilter = () => {
+const IssueStatusFilter = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [selectedStatus, setSelectedStatus] = useState(
@@ -50,4 +50,4 @@ const IssuseStatusFilter = () => {
   );
 };
 
-export default IssuseStatusFilter;
+export default IssueStatusFilter;
