@@ -119,7 +119,7 @@ const Comments: React.FC<CommentsProps> = ({ comments }) => {
                 session.user &&
                 session.user.id === comment.userId && (
                   <DropdownMenu.Root>
-                    <DropdownMenu.Trigger>
+                    <DropdownMenu.Trigger disabled={editing !== null}>
                       <Button variant="soft" size="1" color="blue">
                         <DotsHorizontalIcon />
                       </Button>
