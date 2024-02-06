@@ -6,13 +6,15 @@ import Pagination from "../components/Pagination";
 import IssueTable, { IssuseQuery, columnNames } from "./IssueTable";
 import IssueAction from "./IssueAction";
 
+export const dynamic = "force-dynamic";
+
 const IssuesPage = async ({ searchParams }: { searchParams: IssuseQuery }) => {
   const statuses = Object.values(Status);
   const status = statuses.includes(searchParams.status)
     ? searchParams.status
     : undefined;
   const userId = searchParams.userId;
-  const searchText = searchParams.search || '';
+  const searchText = searchParams.search || "";
   const where = { status, assignedToUserId: userId };
   const orderBy = columnNames.includes(searchParams.orderBy)
     ? { [searchParams.orderBy]: searchParams.sortOrder || "asc" }

@@ -24,8 +24,8 @@ const LatestIssues = async () => {
                   <Flex direction="column" align="start" gap="2">
                     <Link href={`/issues/${issue.id}`}>{issue.title}</Link>
                     <Flex gap="2">
-                      <IssueStatusBadge status={issue.status} />
-                      <PriorityIcon priority={issue.priority} />
+                      <IssueStatusBadge status={issue.status} id={issue.id} />
+                      <PriorityIcon priority={issue.priority} id={issue.id} />
                     </Flex>
                   </Flex>
                   {issue.assignedToUserId && (

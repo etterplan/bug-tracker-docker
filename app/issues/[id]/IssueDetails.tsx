@@ -8,9 +8,9 @@ const IssueDetails = ({ issue }: { issue: Issue }) => {
     <>
       <Heading>{issue.title}</Heading>
       <Flex className="space-x-3" my="2">
-        <IssueStatusBadge status={issue.status}></IssueStatusBadge>
+        <IssueStatusBadge status={issue.status} id={issue.id} />
         <Text>{issue.createdAt.toDateString()}</Text>
-        <PriorityIcon priority={issue.priority} />
+        <PriorityIcon priority={issue.priority} id={issue.id} />
       </Flex>
       <Card className="prose max-w-full" mt="4">
         <ReactMarkdown>{issue.description}</ReactMarkdown>
