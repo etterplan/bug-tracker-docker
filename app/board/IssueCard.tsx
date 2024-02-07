@@ -23,7 +23,7 @@ const IssueCard = ({ issue }: { issue: Issue }) => {
               <Text as="div" size="2" weight="medium">
                 {issue.title}
               </Text>
-              <PriorityIcon priority={issue.priority} />
+              <PriorityIcon priority={issue.priority} id={issue.id} />
             </Flex>
             <Avatar
               size="3"
@@ -35,7 +35,7 @@ const IssueCard = ({ issue }: { issue: Issue }) => {
         </Card>
       </Grid>
     </div>
-  )
-}
+  );
+};
 
-export default IssueCard
+export default IssueCard;

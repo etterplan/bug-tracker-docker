@@ -1,5 +1,9 @@
+"use client";
 import { Priority } from "@prisma/client";
-import { Badge, Tooltip } from "@radix-ui/themes";
+import { Badge, Select, Tooltip } from "@radix-ui/themes";
+import axios from "axios";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import {
   RxArrowDown,
   RxDoubleArrowDown,
@@ -30,13 +34,38 @@ const statusMap: Record<
   MINOR: { label: "Minor", color: "sky", icon: <RxArrowDown size={14} /> },
 };
 
-const PriorityIcon = ({ priority }: { priority: Priority }) => {
+const PriorityIcon = ({ priority, id }: { priority: Priority; id: number }) => {
+  const router = useRouter();
+  const { data: session } = useSession();
+  const getKeyByLabel = (label: string): Priority | undefined =>
+    (Object.keys(statusMap) as Priority[]).find(
+      (key) => statusMap[key].label === label
+    );
+
+  const changeStatus = async (value: string) => {
+    try {
+      await axios.patch("/api/issues/" + id, {
+        priority: getKeyByLabel(value),
+      });
+      router.refresh();
+    } catch (error) {}
+  };
   return (
-    <Tooltip content={statusMap[priority].label}>
-      <Badge color={statusMap[priority].color}>
-        {statusMap[priority].icon}
-      </Badge>
-    </Tooltip>
+    <Select.Root
+      size="1"
+      value={statusMap[priority].label}
+      onValueChange={changeStatus}
+      disabled={!session}
+    >
+      <Select.Trigger color={statusMap[priority].color} variant="soft" />
+      <Select.Content>
+        {Object.entries(statusMap).map(([priority, { label, icon, color }]) => (
+          <Select.Item value={label} key={priority}>
+            <Badge color={color}>{icon}</Badge>
+          </Select.Item>
+        ))}
+      </Select.Content>
+    </Select.Root>
   );
 };
 
