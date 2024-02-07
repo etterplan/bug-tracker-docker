@@ -32,7 +32,7 @@ const IssueStatusBadge = ({ status, id }: { status: Status; id: number }) => {
   return (
     <Select.Root
       size="1"
-      defaultValue={statusMap[status].label}
+      value={statusMap[status].label}
       onValueChange={changeStatus}
       disabled={!session}
     >

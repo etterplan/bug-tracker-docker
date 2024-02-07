@@ -53,7 +53,7 @@ const PriorityIcon = ({ priority, id }: { priority: Priority; id: number }) => {
   return (
     <Select.Root
       size="1"
-      defaultValue={statusMap[priority].label}
+      value={statusMap[priority].label}
       onValueChange={changeStatus}
       disabled={!session}
     >
