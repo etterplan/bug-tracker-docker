@@ -53,8 +53,8 @@ model Issue {
   assignedToUserId String?   @db.VarChar(255)
   assignedToUser   User?     @relation(fields: [assignedToUserId], references: [id])
   Comment          Comment[]
-  project          Project   @relation(fields: [projectId], references: [id])
-  projectId        Int
+  project          Project?  @relation(fields: [projectId], references: [id])
+  projectId        Int?
   board            Board?    @relation(fields: [boardId], references: [id])
   boardId          Int?
 
