@@ -14,3 +14,9 @@ export const patchIssuseSchema = z.object({
 export const commentSchema = z.object({
   text: z.string().min(1, 'Comment text is required.').max(255)
 });
+
+
+export const projectSchema = z.object({
+  name: z.string().min(1, 'Projetc is required').max(255),
+  description: z.string().min(1, 'Description is required').max(255)
+});
