@@ -11,6 +11,37 @@ datasource db {
   relationMode = "prisma"
 }
 
+// Define the Project model
+model Project {
+  id          Int            @id @default(autoincrement())
+  name        String
+  description String?
+  status      ProjectStatus?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  members     User[] // A project can have multiple members (users)
+  board       Board?
+  issues      Issue[]
+}
+
+enum ProjectStatus {
+  ON_TRACK
+  AT_RISK
+  OFF_TRACK
+  ON_HOLD
+  COMPLETE
+}
+
+model Board {
+  id        Int      @id @default(autoincrement())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  project   Project  @relation(fields: [projectId], references: [id])
+  issues    Issue[]
+  projectId Int      @unique
+}
+
 model Issue {
   id               Int       @id @default(autoincrement())
   title            String    @db.VarChar(255)
@@ -22,6 +53,14 @@ model Issue {
   assignedToUserId String?   @db.VarChar(255)
   assignedToUser   User?     @relation(fields: [assignedToUserId], references: [id])
   Comment          Comment[]
+  project          Project?  @relation(fields: [projectId], references: [id])
+  projectId        Int?
+  board            Board?    @relation(fields: [boardId], references: [id])
+  boardId          Int?
+
+  @@index([assignedToUserId])
+  @@index([projectId])
+  @@index([boardId])
 }
 
 model Comment {
@@ -36,6 +75,9 @@ model Comment {
   userId    String?
   userImage String?
   userName  String?
+
+  @@index([issueId])
+  @@index([userId, userEmail, userImage, userName])
 }
 
 enum Status {
@@ -69,6 +111,7 @@ model Account {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
+  @@index([userId])
 }
 
 model Session {
@@ -77,6 +120,8 @@ model Session {
   userId       String
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 model User {
@@ -89,8 +134,11 @@ model User {
   sessions       Session[]
   assignedIssues Issue[]
   Comment        Comment[]
+  Project        Project?  @relation(fields: [projectId], references: [id])
+  projectId      Int?
 
   @@unique([id, email, image, name])
+  @@index([projectId])
 }
 
 model VerificationToken {
