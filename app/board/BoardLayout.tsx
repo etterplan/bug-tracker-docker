@@ -2,7 +2,7 @@
 import { Issue as PrismaIssue, User } from "@prisma/client";
 import { Text } from "@radix-ui/themes";
 import IssueCard from "./IssueCard";
-import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd'
+import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd'
 import { useState } from "react";
 
 type Issue = PrismaIssue & {
