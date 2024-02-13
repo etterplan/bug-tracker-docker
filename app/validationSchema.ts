@@ -9,6 +9,8 @@ export const patchIssuseSchema = z.object({
   title: z.string().min(1, 'Title is required').max(255).optional(),
   description: z.string().min(1, 'Description is required').max(65535).optional(),
   assignedToUserId: z.string().min(1, 'AssignedToUserId is required').max(255).optional().nullable(),
+  projectId: z.number().int().positive().optional(),
+  boardId: z.number().int().positive().optional(),
 });
 
 export const commentSchema = z.object({
@@ -19,4 +21,18 @@ export const commentSchema = z.object({
 export const projectSchema = z.object({
   name: z.string().min(1, 'Projetc is required').max(255),
   description: z.string().min(1, 'Description is required').max(255)
+});
+
+export const updateProjectSchema = z.object({
+  name: z.string().min(1, 'Projetc is required').max(255).optional(),
+  description: z.string().min(1, 'Description is required').max(255).optional(),
+});
+
+export const boardSchema = z.object({
+  name: z.string().min(1, 'Board is required').max(255)
+});
+
+export const updateBoardSchema = z.object({
+  name: z.string().min(1, 'Board is required').max(255).optional(),
+  projectId: z.number().int().positive().optional(),
 });
