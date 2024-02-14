@@ -114,12 +114,6 @@ const BoardLayout: React.FC<BoardLayoutProps> = ({ openIssues, inProgressIssues,
       ...finish,
       issueIds: finishIssueIds,
     };
-    //updating state with new start and finish colum
-    setIssues({
-      ...issues,
-      [source.droppableId as keyof Issues]: newStart,
-      [destination.droppableId as keyof Issues]: newFinish,
-    });
 
     try {
       const destinationId = result.destination?.droppableId;
@@ -136,10 +130,35 @@ const BoardLayout: React.FC<BoardLayoutProps> = ({ openIssues, inProgressIssues,
       if (destinationId && statusMapping[destinationId]) {
 
         const checkedStatus = {
-          status: statusMapping[destinationId],
-          boardPosition: destination.index
+          status: statusMapping[destinationId]
         };
         await axios.patch(`/api/issues/${draggableId}`, checkedStatus);
+
+        // Update the boardPosition of all issues in the start and destination columns
+        const updatedStartIssues = await Promise.all(
+          newStart.issueIds.map((issue, index) => {
+            if (issue) {  //check that issue is not undefined
+              console.log(issue.id);
+              return axios.patch(`/api/issues/${issue.id}`, { boardPosition: index })
+                .then(() => ({ ...issue, boardPosition: index }));  //return updated issue
+            }
+          })
+        );
+        const updatedFinishIssues = await Promise.all(
+          newFinish.issueIds.map((issue, index) => {
+            if (issue) {  //check that issue is not undefined
+              console.log(issue.id);
+              return axios.patch(`/api/issues/${issue.id}`, { boardPosition: index })
+                .then(() => ({ ...issue, boardPosition: index }));  //return updated issue
+            }
+          })
+        );
+        //update state with updated issues
+        setIssues({
+          ...issues,
+          [source.droppableId as keyof Issues]: updatedStartIssues.filter(Boolean),  //remove undefined values
+          [destination.droppableId as keyof Issues]: updatedFinishIssues.filter(Boolean),  //remove undefined values
+        });
         router.refresh();
       }
     } catch (error) {
