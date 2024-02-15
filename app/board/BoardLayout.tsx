@@ -28,7 +28,7 @@ type Issues = {
 const BoardLayout: React.FC<BoardLayoutProps> = ({ openIssues, inProgressIssues, closedIssues }) => {
   const router = useRouter();
   const [issues, setIssues] = useState<Issues>({ openIssues, inProgressIssues, closedIssues });
-  console.log(issues)
+  // console.log(issues)
 
   const onDragEnd = async (result: DropResult) => {
     const { destination, source, draggableId } = result;
@@ -67,6 +67,29 @@ const BoardLayout: React.FC<BoardLayoutProps> = ({ openIssues, inProgressIssues,
         [source.droppableId]: newColumn,
       });
 
+      try {
+        // update the boardPosition of all issues in the column
+        const updatedIssues = await Promise.all(
+          newColumn.issueIds.map((issue, index) => {
+            if (issue) {  //check that issue is not undefined
+              console.log(issue.id);
+              return axios.patch(`/api/issues/${issue.id}`, { boardPosition: index })
+                .then(() => ({ ...issue, boardPosition: index }));  //return updated issue
+            }
+          })
+        );
+        //update state with updated issues
+        setIssues({
+          ...issues,
+          [source.droppableId]: updatedIssues.filter(Boolean),  //remove undefined values
+        });
+
+        router.refresh();
+      } catch (error) {
+        toast.error("Changes could not be saved.");
+        console.log(error)
+      }
+
       return;
     }
     //MOVING ISSUE BETWEEN COLUMNS
@@ -91,41 +114,56 @@ const BoardLayout: React.FC<BoardLayoutProps> = ({ openIssues, inProgressIssues,
       ...finish,
       issueIds: finishIssueIds,
     };
-    //updating state with new start and finish colum
-    setIssues({
-      ...issues,
-      [source.droppableId as keyof Issues]: newStart,
-      [destination.droppableId as keyof Issues]: newFinish,
-    });
 
     try {
-      const draggableId = result.draggableId;
       const destinationId = result.destination?.droppableId;
+      const boardPosition = destination.index;
 
-      // Define the valid statuses
+      //valid statuses
       const statusMapping: { [key: string]: string } = {
         openIssues: "OPEN",
         inProgressIssues: "IN_PROGRESS",
         closedIssues: "CLOSED"
       };
 
-      // Check if the destinationId is a valid status
+      //check if the destinationId is a valid status
       if (destinationId && statusMapping[destinationId]) {
-        // Prepare the data to be sent to the server
+
         const checkedStatus = {
           status: statusMapping[destinationId]
         };
-
-        // Make the API call to update the issue status in the database
         await axios.patch(`/api/issues/${draggableId}`, checkedStatus);
 
-        // Refresh the page to reflect the changes
+        // Update the boardPosition of all issues in the start and destination columns
+        const updatedStartIssues = await Promise.all(
+          newStart.issueIds.map((issue, index) => {
+            if (issue) {  //check that issue is not undefined
+              console.log(issue.id);
+              return axios.patch(`/api/issues/${issue.id}`, { boardPosition: index })
+                .then(() => ({ ...issue, boardPosition: index }));  //return updated issue
+            }
+          })
+        );
+        const updatedFinishIssues = await Promise.all(
+          newFinish.issueIds.map((issue, index) => {
+            if (issue) {  //check that issue is not undefined
+              console.log(issue.id);
+              return axios.patch(`/api/issues/${issue.id}`, { boardPosition: index })
+                .then(() => ({ ...issue, boardPosition: index }));  //return updated issue
+            }
+          })
+        );
+        //update state with updated issues
+        setIssues({
+          ...issues,
+          [source.droppableId as keyof Issues]: updatedStartIssues.filter(Boolean),  //remove undefined values
+          [destination.droppableId as keyof Issues]: updatedFinishIssues.filter(Boolean),  //remove undefined values
+        });
         router.refresh();
       }
     } catch (error) {
       toast.error("Changes could not be saved.");
     }
-
   };
 
   return (
