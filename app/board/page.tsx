@@ -1,28 +1,26 @@
-import { Grid } from "@radix-ui/themes";
 import prisma from "@/prisma/client";
+import { Prisma, Status } from "@prisma/client";
+import { Grid } from "@radix-ui/themes";
 import { Metadata } from "next";
-import BoardLayout from "./BoardLayout";
-import { Prisma } from "@prisma/client";
+import ShowBoard from "./ShowBoard";
 
 export const dynamic = "force-dynamic";
 
 type Issue = Prisma.IssueGetPayload<{
   include: {
     assignedToUser: true;
-  }
+  };
 }>;
 
 export default async function Board() {
-  const openIssues = await prisma.issue.findMany({
+  /* const openIssues = await prisma.issue.findMany({
     where: {
       status: "OPEN",
     },
     include: {
       assignedToUser: true,
     },
-    orderBy: [
-      { id: 'asc' },
-    ],
+    orderBy: [{ id: "asc" }],
   });
 
   const inProgressIssues = await prisma.issue.findMany({
@@ -32,9 +30,7 @@ export default async function Board() {
     include: {
       assignedToUser: true,
     },
-    orderBy: [
-      { id: 'asc' },
-    ],
+    orderBy: [{ id: "asc" }],
   });
 
   const closedIssues = await prisma.issue.findMany({
@@ -44,22 +40,20 @@ export default async function Board() {
     include: {
       assignedToUser: true,
     },
-    orderBy: [
-      { id: 'asc' },
-    ],
+    orderBy: [{ id: "asc" }],
   });
 
   const rearrangeIssues = (issues: Issue[]): Issue[] => {
     const sortedIssues: (Issue | null)[] = new Array(issues.length).fill(null);
 
     issues.forEach((issue) => {
-      if (issue.boardPosition !== null && issue.boardPosition < issues.length) {
-        sortedIssues[issue.boardPosition] = issue;
+      if (issue.position !== null && issue.position < issues.length) {
+        sortedIssues[issue.position] = issue;
       }
     });
 
     issues.forEach((issue) => {
-      if (issue.boardPosition === null || issue.boardPosition >= issues.length) {
+      if (issue.position === null || issue.position >= issues.length) {
         const nullIndex = sortedIssues.indexOf(null);
         if (nullIndex !== -1) {
           sortedIssues[nullIndex] = issue;
@@ -69,16 +63,38 @@ export default async function Board() {
       }
     });
 
-    return sortedIssues.filter(issue => issue !== null) as Issue[];
-  };
+    return sortedIssues.filter((issue) => issue !== null) as Issue[];
+  }; 
 
-  return (
+    return (
     <Grid columns={{ initial: "1", sm: "3" }} gap="5">
       <BoardLayout
         openIssues={rearrangeIssues(openIssues)}
         inProgressIssues={rearrangeIssues(inProgressIssues)}
         closedIssues={rearrangeIssues(closedIssues)}
       />
+    </Grid>
+  );
+*/
+  const issuesByStatus: Record<Status, Issue[]> = {
+    [Status.TODO]: [],
+    [Status.OPEN]: [],
+    [Status.IN_PROGRESS]: [],
+    [Status.CLOSED]: [],
+  };
+
+  const boardIssues = await prisma.issue.findMany({
+    where: {
+      boardId: 7,
+    },
+  });
+  boardIssues.forEach((issue) => {
+    issuesByStatus[issue.status].push(issue);
+  });
+
+  return (
+    <Grid columns={{ initial: "1", sm: "4" }} gap="3">
+      <ShowBoard issueList={issuesByStatus} />
     </Grid>
   );
 }

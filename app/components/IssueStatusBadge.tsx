@@ -7,8 +7,9 @@ import { useRouter } from "next/navigation";
 
 const statusMap: Record<
   Status,
-  { label: string; color: "red" | "violet" | "green" }
+  { label: string; color: "gray" | "red" | "violet" | "green" }
 > = {
+  TODO: { label: "Todo", color: "gray" },
   OPEN: { label: "Open", color: "red" },
   IN_PROGRESS: { label: "In Progress", color: "violet" },
   CLOSED: { label: "Closed", color: "green" },
@@ -38,6 +39,7 @@ const IssueStatusBadge = ({ status, id }: { status: Status; id: number }) => {
     >
       <Select.Trigger color={statusMap[status].color} variant="soft" />
       <Select.Content>
+        <Select.Item value="Todo">Todo</Select.Item>
         <Select.Item value="Open">Open</Select.Item>
         <Select.Item value="In Progress">In Progress</Select.Item>
         <Select.Item value="Closed">Closed</Select.Item>

@@ -39,7 +39,7 @@ const projectStatusMap: Record<
       | "gray";
   }
 > = {
-  ON_TRACK: { label: "On Track", color: "grass" },
+  ON_TRACK: { label: "On Track", color: "lime" },
   OFF_TRACK: { label: "Off Track", color: "red" },
   AT_RISK: { label: "At Risk", color: "yellow" },
   ON_HOLD: { label: "On Hold", color: "blue" },

@@ -20,8 +20,9 @@ model Project {
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
   members     User[] // A project can have multiple members (users)
-  board       Board?
-  issues      Issue[]
+  board       Board         @relation(fields: [boardId], references: [id]) // A project has a board
+  issues      Issue[] // A project can have multiple tasks
+  boardId     Int           @unique
 }
 
 enum ProjectStatus {
@@ -33,21 +34,39 @@ enum ProjectStatus {
   COMPLETE
 }
 
+// Board model representing a board within a project
 model Board {
+  id        Int       @id @default(autoincrement())
+  name      String    @db.VarChar(255)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  project   Project?
+  projectId Int?      @unique
+  sections  Section[] // A board can have multiple sections
+  issues    Issue[]
+
+  @@index([projectId])
+}
+
+// Section model representing a section within a board
+model Section {
   id        Int      @id @default(autoincrement())
-  name      String   @db.VarChar(255)
+  name      String
+  board     Board    @relation(fields: [boardId], references: [id])
+  boardId   Int
+  issues    Issue[]
+  status    Status // Status of the section itself
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  project   Project? @relation(fields: [projectId], references: [id])
-  issues    Issue[]
-  projectId Int?     @unique
+
+  @@index([boardId])
 }
 
 model Issue {
   id               Int       @id @default(autoincrement())
   title            String    @db.VarChar(255)
   description      String    @db.Text
-  status           Status    @default(OPEN)
+  status           Status    @default(TODO)
   priority         Priority  @default(MEDIUM)
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt
@@ -56,13 +75,16 @@ model Issue {
   Comment          Comment[]
   project          Project?  @relation(fields: [projectId], references: [id])
   projectId        Int?
-  board            Board?    @relation(fields: [boardId], references: [id])
+  position         Int? // New field for position of the issue within its section
+  Board            Board?    @relation(fields: [boardId], references: [id])
   boardId          Int?
-  boardPosition    Int?
+  Section          Section?  @relation(fields: [sectionId], references: [id])
+  sectionId        Int?
 
   @@index([assignedToUserId])
   @@index([projectId])
   @@index([boardId])
+  @@index([sectionId])
 }
 
 model Comment {
@@ -83,6 +105,7 @@ model Comment {
 }
 
 enum Status {
+  TODO
   OPEN
   IN_PROGRESS
   CLOSED

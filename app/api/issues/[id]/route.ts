@@ -1,6 +1,7 @@
 import authOptions from "@/app/auth/authOptions";
 import { patchIssuseSchema } from "@/app/validationSchema";
 import prisma from "@/prisma/client";
+import { Priority, Status } from "@prisma/client";
 import { getServerSession } from "next-auth/next";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -13,7 +14,7 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
   const validation = patchIssuseSchema.safeParse(body);
   if (!validation.success)
     return NextResponse.json(validation.error.format(), { status: 400 })
-  const { assignedToUserId, title, description, status, priority, projectId, boardId, boardPosition } = body;
+  const { assignedToUserId, title, description, status, priority, projectId, position} = body;
   if (assignedToUserId) {
     const user = await prisma.user.findUnique({ where: { id: assignedToUserId } });
     if (!user)
@@ -25,17 +26,30 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
   if (!issue)
     return NextResponse.json({ error: "Invalid issue" }, { status: 404 })
 
-  const updateIssue = await prisma.issue.update({
-    where: { id: parseInt(params.id) },
-    data: {
+    let updateData: {
+      title?: string;
+      description?: string;
+      status?: Status;
+      priority?: Priority;
+      assignedToUserId?: string | null;
+      projectId?: number | null;
+      boardId?: number | null;
+      position?: number | null;
+    } = {
       title: title,
       description: description,
-      status: status, priority: priority,
-      assignedToUserId,
-      projectId,
-      boardId,
-      boardPosition
-    }
+      status: status,
+      priority: priority,
+      assignedToUserId: assignedToUserId,
+      projectId: projectId,
+      boardId:projectId,
+      position: position
+    };
+  
+
+  const updateIssue = await prisma.issue.update({
+    where: { id: parseInt(params.id) },
+    data: updateData
   })
   return NextResponse.json(updateIssue)
 

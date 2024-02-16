@@ -1,8 +1,9 @@
-import { Issue, Status } from "@prisma/client";
+import { Issue, Project, Status } from "@prisma/client";
 import { ArrowDownIcon, ArrowUpIcon } from "@radix-ui/react-icons";
 import { Table } from "@radix-ui/themes";
 import Link from "next/link";
 import { IssueStatusBadge, PriorityIcon } from "../components";
+import ChooseProject from "../components/ChooseProject";
 
 export interface IssuseQuery {
   status: Status;
@@ -16,9 +17,10 @@ export interface IssuseQuery {
 interface Props {
   searchParams: IssuseQuery;
   issues: Issue[];
+  projects: Project[];
 }
 
-const IssueTable = ({ searchParams, issues }: Props) => {
+const IssueTable = ({ searchParams, issues, projects }: Props) => {
   return (
     <Table.Root variant="surface">
       <Table.Header>
@@ -74,6 +76,13 @@ const IssueTable = ({ searchParams, issues }: Props) => {
             <Table.Cell className="hidden md:table-cell">
               <PriorityIcon priority={issue.priority} id={issue.id} />
             </Table.Cell>
+            <Table.Cell className="hidden md:table-cell">
+              <ChooseProject
+                projects={projects}
+                issueId={issue.id}
+                projectId={issue.projectId}
+              />
+            </Table.Cell>
           </Table.Row>
         ))}
       </Table.Body>
@@ -90,6 +99,11 @@ const columns: {
   { label: "Status", value: "status", className: "hidden md:table-cell" },
   { label: "Created", value: "createdAt", className: "hidden md:table-cell" },
   { label: "Priority", value: "priority", className: "hidden md:table-cell" },
+  {
+    label: "AssignToProject",
+    value: "projectId",
+    className: "hidden md:table-cell",
+  },
 ];
 
 export const columnNames = columns.map((column) => column.value);
