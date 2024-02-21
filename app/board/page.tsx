@@ -4,7 +4,7 @@ import { Grid } from "@radix-ui/themes";
 import { Metadata } from "next";
 import ShowBoard from "./ShowBoard";
 
-export const dynamic = "force-dynamic";
+// export const dynamic = "force-dynamic";
 
 type Issue = Prisma.IssueGetPayload<{
   include: {
@@ -85,12 +85,21 @@ export default async function Board() {
 
   const boardIssues = await prisma.issue.findMany({
     where: {
-      boardId: 7,
+      boardId: 1,
     },
   });
   boardIssues.forEach((issue) => {
     issuesByStatus[issue.status].push(issue);
   });
+
+  for (const status in issuesByStatus) {
+    issuesByStatus[status as Status].sort((a, b) => {
+      //null positions being larger than any other number
+      const aPosition = a.position !== null ? a.position : Infinity;
+      const bPosition = b.position !== null ? b.position : Infinity;
+      return aPosition - bPosition;
+    });
+  }
 
   return (
     <Grid columns={{ initial: "1", sm: "4" }} gap="3">
