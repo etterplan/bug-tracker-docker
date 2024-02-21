@@ -1,27 +1,30 @@
 "use client";
-import {
-  DragDropContext,
-  Draggable,
-  DropResult,
-  Droppable,
-} from "@hello-pangea/dnd";
+import { DragDropContext, Draggable, DropResult, Droppable } from "@hello-pangea/dnd";
 import { Issue, Status } from "@prisma/client";
 import { Text } from "@radix-ui/themes";
 import axios from "axios";
-import { useState } from "react";
-import { Toaster } from "react-hot-toast";
+import { useState, useEffect } from "react";
+import toast, { Toaster } from "react-hot-toast";
 import IssueCard from "./IssueCard";
+import { useRouter } from "next/navigation";
 
 interface Props {
   issueList: Record<Status, Issue[]>;
 }
 const ShowBoard = ({ issueList }: Props) => {
+  const router = useRouter();
   const [issues, setIssuesData] = useState(issueList);
+  useEffect(() => {
+    setIssuesData(issueList);
+  }, [issueList]);
 
   const onDragEnd = async (result: DropResult) => {
     const { source, destination, draggableId } = result;
 
     if (!destination) return;
+    if (destination.droppableId === source.droppableId && destination.index === source.index) return;
+
+    const epsilon = 0.001;
 
     // Reorder issues within the same column
     if (source.droppableId === destination.droppableId) {
@@ -30,13 +33,45 @@ const ShowBoard = ({ issueList }: Props) => {
       const [removed] = updatedIssues.splice(source.index, 1);
       updatedIssues.splice(destination.index, 0, removed);
 
-      // Update positions in the database
-      await axios.patch(`/api/issues/${draggableId}`, {
-        status,
-        position: destination.index,
-      });
+      if (updatedIssues.length === 0) {
+        return;
+      }
 
-      setIssuesData({ ...issues, [status]: updatedIssues });
+      let newPosition: number;
+      if (destination.index === 0) { // Moved to the beginning of the list
+        newPosition = updatedIssues[1].position - 0.1;
+      } else if (destination.index === updatedIssues.length - 1) { // Moved to the end of the list
+        newPosition = updatedIssues[updatedIssues.length - 2].position + 0.1;
+      } else { // Moved somewhere in the middle of the list
+        const prevPosition = updatedIssues[destination.index - 1].position;
+        const nextPosition = updatedIssues[destination.index + 1].position;
+        newPosition = (prevPosition + nextPosition) / 2;
+      }
+
+      if (newPosition === 0 || newPosition < 0) {
+        newPosition = epsilon;
+      }
+      //check if newPosition already exists in the position values of the other issues
+      if (updatedIssues.some(issue => issue.position === newPosition)) {
+        console.log('Duplicate position found:', newPosition);
+        return;
+      }
+
+      console.log('New position:', newPosition);
+
+      try {
+        // Update positions in the database
+        await axios.patch(`/api/issues/${draggableId}`, {
+          position: newPosition
+        });
+
+        setIssuesData({ ...issues, [status]: updatedIssues });
+        router.refresh();
+      } catch (error) {
+        toast.error("Changes could not be saved.");
+        console.log(error);
+      }
+
     } else {
       // Move issue to a different column
       const sourceStatus = source.droppableId;
@@ -46,18 +81,53 @@ const ShowBoard = ({ issueList }: Props) => {
       const [removed] = updatedSourceIssues.splice(source.index, 1);
       updatedDestinationIssues.splice(destination.index, 0, removed);
 
-      // Update positions in the database
+      if (updatedDestinationIssues.length === 0) {
+        return;
+      }
+      let newPosition: number;
+      if (updatedDestinationIssues.length > 1) {
+        if (destination.index === 0) { // Moved to the beginning of the list
+          newPosition = updatedDestinationIssues.length > 1 ? updatedDestinationIssues[1].position - 0.1 : 0.1;
+        } else if (destination.index === updatedDestinationIssues.length - 1) { // Moved to the end of the list
+          newPosition = updatedDestinationIssues.length > 1 ? updatedDestinationIssues[updatedDestinationIssues.length - 2].position + 0.1 : 0.1;
+        } else { // Moved somewhere in the middle of the list
+          const prevPosition = updatedDestinationIssues[destination.index - 1].position;
+          const nextPosition = updatedDestinationIssues[destination.index + 1].position;
+          newPosition = (prevPosition + nextPosition) / 2;
+        }
+      } else {
+        //if updatedDestinationIssues is empty
+        newPosition = 0.99;
+      }
 
-      axios.patch(`/api/issues/${draggableId}`, {
-        status: destinationStatus,
-        position: destination.index,
-      });
+      if (newPosition === 0 || newPosition < 0) {
+        newPosition = epsilon;
+      }
+      //check if newPosition already exists in the position values of the other issues
+      if (updatedDestinationIssues.some(issue => issue.position === newPosition)) {
+        console.log('Duplicate position found:', newPosition);
+        return;
+      }
 
-      setIssuesData({
-        ...issues,
-        [sourceStatus]: updatedSourceIssues,
-        [destinationStatus]: updatedDestinationIssues,
-      });
+      console.log('New position:', newPosition);
+
+      try {
+        // Update positions in the database
+        axios.patch(`/api/issues/${draggableId}`, {
+          status: destinationStatus,
+          position: newPosition
+        });
+
+        setIssuesData({
+          ...issues,
+          [sourceStatus]: updatedSourceIssues,
+          [destinationStatus]: updatedDestinationIssues,
+        });
+        router.refresh();
+      } catch (error) {
+        toast.error("Changes could not be saved.");
+        console.log(error);
+      }
     }
   };
 
