@@ -12,6 +12,8 @@ type Issue = Prisma.IssueGetPayload<{
 interface Pros {
   params: { id: string };
 }
+export const dynamic = "force-dynamic";
+
 export default async function ViewBoard({ params }: Pros) {
   const issuesByStatus: Record<Status, Issue[]> = {
     [Status.TODO]: [],
