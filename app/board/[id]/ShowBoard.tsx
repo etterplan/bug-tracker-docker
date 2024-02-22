@@ -1,5 +1,10 @@
 "use client";
-import { DragDropContext, Draggable, DropResult, Droppable } from "@hello-pangea/dnd";
+import {
+  DragDropContext,
+  Draggable,
+  DropResult,
+  Droppable,
+} from "@hello-pangea/dnd";
 import { Issue as PrismaIssue, Status, User } from "@prisma/client";
 import { Text } from "@radix-ui/themes";
 import axios from "axios";
@@ -26,7 +31,11 @@ const ShowBoard = ({ issueList }: Props) => {
     const { source, destination, draggableId } = result;
 
     if (!destination) return;
-    if (destination.droppableId === source.droppableId && destination.index === source.index) return;
+    if (
+      destination.droppableId === source.droppableId &&
+      destination.index === source.index
+    )
+      return;
 
     const epsilon = 0.001;
 
@@ -42,42 +51,63 @@ const ShowBoard = ({ issueList }: Props) => {
       }
 
       let newPosition: number;
-      if (destination.index === 0) { // Moved to the beginning of the list
-        newPosition = updatedIssues[1]?.position ? updatedIssues[1].position - 0.1 : epsilon;
-      } else if (destination.index === updatedIssues.length - 1) { // Moved to the end of the list
-        newPosition = updatedIssues.length > 1 && updatedIssues[updatedIssues.length - 2]?.position !== null ? updatedIssues[updatedIssues.length - 2].position! + 0.1 : 0.999991;
-      } else { // Moved somewhere in the middle of the list
+      if (destination.index === 0) {
+        // Moved to the beginning of the list
+        newPosition = updatedIssues[1]?.position
+          ? updatedIssues[1].position - 0.1
+          : epsilon;
+      } else if (destination.index === updatedIssues.length - 1) {
+        // Moved to the end of the list
+        newPosition =
+          updatedIssues.length > 1 &&
+          updatedIssues[updatedIssues.length - 2]?.position !== null
+            ? updatedIssues[updatedIssues.length - 2].position! + 0.1
+            : 0.999991;
+      } else {
+        // Moved somewhere in the middle of the list
         const prevPosition = updatedIssues[destination.index - 1]?.position;
         const nextPosition = updatedIssues[destination.index + 1]?.position;
-        newPosition = prevPosition !== null && nextPosition !== null ? (prevPosition + nextPosition) / 2 : 0.1;
+        newPosition =
+          prevPosition !== null && nextPosition !== null
+            ? (prevPosition + nextPosition) / 2
+            : 0.1;
       }
 
       if (newPosition <= 0) {
         newPosition = epsilon;
       }
       //check if newPosition already exists in the position values of the other issues
-      if (updatedIssues.some(issue => issue.position === newPosition && issue.id !== Number(draggableId))) {
-        console.log('Duplicate position found:', newPosition, ' In: ', updatedIssues);
-        console.log('Id of draggable:', draggableId)
-        toast.error('Changes could not be saved.');
+      if (
+        updatedIssues.some(
+          (issue) =>
+            issue.position === newPosition && issue.id !== Number(draggableId)
+        )
+      ) {
+        console.log(
+          "Duplicate position found:",
+          newPosition,
+          " In: ",
+          updatedIssues
+        );
+        console.log("Id of draggable:", draggableId);
+        toast.error("Changes could not be saved.");
         return;
       }
 
-      console.log('New position:', newPosition);
+      console.log("New position:", newPosition);
 
       try {
         // Update positions in the database
         await axios.patch(`/api/issues/${draggableId}`, {
-          position: newPosition
+          position: newPosition,
         });
 
         setIssuesData({ ...issues, [status]: updatedIssues });
         router.refresh();
       } catch (error) {
-        toast.error('Changes could not be saved.');
+        toast.error("Changes could not be saved.");
         console.log(error);
       }
-
     } else {
       // Move issue to a different column
       const sourceStatus = source.droppableId;
@@ -92,14 +122,30 @@ const ShowBoard = ({ issueList }: Props) => {
       }
       let newPosition: number;
       if (updatedDestinationIssues.length > 1) {
-        if (destination.index === 0) { // Moved to the beginning of the list
-          newPosition = updatedDestinationIssues[1]?.position !== null ? updatedDestinationIssues[1].position - 0.1 : 0.1;
-        } else if (destination.index === updatedDestinationIssues.length - 1) { // Moved to the end of the list
-          newPosition = updatedDestinationIssues[updatedDestinationIssues.length - 2]?.position !== null ? updatedDestinationIssues[updatedDestinationIssues.length - 2].position! + 0.1 : 0.999991;
-        } else { // Moved somewhere in the middle of the list
-          const prevPosition = updatedDestinationIssues[destination.index - 1]?.position;
-          const nextPosition = updatedDestinationIssues[destination.index + 1]?.position;
-          newPosition = prevPosition !== null && nextPosition !== null ? (prevPosition + nextPosition) / 2 : 0.1;
+        if (destination.index === 0) {
+          // Moved to the beginning of the list
+          newPosition =
+            updatedDestinationIssues[1]?.position !== null
+              ? updatedDestinationIssues[1].position - 0.1
+              : 0.1;
+        } else if (destination.index === updatedDestinationIssues.length - 1) {
+          // Moved to the end of the list
+          newPosition =
+            updatedDestinationIssues[updatedDestinationIssues.length - 2]
+              ?.position !== null
+              ? updatedDestinationIssues[updatedDestinationIssues.length - 2]
+                  .position! + 0.1
+              : 0.999991;
+        } else {
+          // Moved somewhere in the middle of the list
+          const prevPosition =
+            updatedDestinationIssues[destination.index - 1]?.position;
+          const nextPosition =
+            updatedDestinationIssues[destination.index + 1]?.position;
+          newPosition =
+            prevPosition !== null && nextPosition !== null
+              ? (prevPosition + nextPosition) / 2
+              : 0.1;
         }
       } else {
         //if updatedDestinationIssues is empty
@@ -110,20 +156,30 @@ const ShowBoard = ({ issueList }: Props) => {
         newPosition = epsilon;
       }
       //check if newPosition already exists in the position values of the other issues
-      if (updatedDestinationIssues.some(issue => issue.position === newPosition && issue.id !== Number(draggableId))) {
-        console.log('Duplicate position found:', newPosition, ' In: ', updatedDestinationIssues);
-        console.log('Id of draggable:', draggableId)
-        toast.error('Changes could not be saved. Duplicate position value!');
+      if (
+        updatedDestinationIssues.some(
+          (issue) =>
+            issue.position === newPosition && issue.id !== Number(draggableId)
+        )
+      ) {
+        console.log(
+          "Duplicate position found:",
+          newPosition,
+          " In: ",
+          updatedDestinationIssues
+        );
+        console.log("Id of draggable:", draggableId);
+        toast.error("Changes could not be saved. Duplicate position value!");
         return;
       }
 
-      console.log('New position:', newPosition);
+      console.log("New position:", newPosition);
 
       try {
         // Update positions in the database
         axios.patch(`/api/issues/${draggableId}`, {
           status: destinationStatus,
-          position: newPosition
+          position: newPosition,
         });
 
         setIssuesData({
@@ -133,7 +189,7 @@ const ShowBoard = ({ issueList }: Props) => {
         });
         router.refresh();
       } catch (error) {
-        toast.error('Changes could not be saved.');
+        toast.error("Changes could not be saved.");
         console.log(error);
       }
     }
