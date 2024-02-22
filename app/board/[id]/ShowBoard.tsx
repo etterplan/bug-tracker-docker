@@ -98,12 +98,13 @@ const ShowBoard = ({ issueList }: Props) => {
 
       try {
         // Update positions in the database
-        await axios.patch(`/api/issues/${draggableId}`, {
+        const updatePostion = await axios.patch(`/api/issues/${draggableId}`, {
           position: newPosition,
         });
-
-        setIssuesData({ ...issues, [status]: updatedIssues });
-        router.refresh();
+        if (updatePostion.status === 200) {
+          setIssuesData({ ...issues, [status]: updatedIssues });
+          router.refresh();
+        }
       } catch (error) {
         toast.error("Changes could not be saved.");
         console.log(error);
@@ -177,17 +178,19 @@ const ShowBoard = ({ issueList }: Props) => {
 
       try {
         // Update positions in the database
-        axios.patch(`/api/issues/${draggableId}`, {
+
+        const updatePostion = await axios.patch(`/api/issues/${draggableId}`, {
           status: destinationStatus,
           position: newPosition,
         });
-
-        setIssuesData({
-          ...issues,
-          [sourceStatus]: updatedSourceIssues,
-          [destinationStatus]: updatedDestinationIssues,
-        });
-        router.refresh();
+        if (updatePostion.status === 200) {
+          setIssuesData({
+            ...issues,
+            [sourceStatus]: updatedSourceIssues,
+            [destinationStatus]: updatedDestinationIssues,
+          });
+          router.refresh();
+        }
       } catch (error) {
         toast.error("Changes could not be saved.");
         console.log(error);

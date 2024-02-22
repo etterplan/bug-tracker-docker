@@ -25,7 +25,10 @@ const IssueStatusBadge = ({ status, id }: { status: Status; id: number }) => {
 
   const changeStatus = async (value: string) => {
     try {
-      await axios.patch("/api/issues/" + id, { status: getKeyByLabel(value) });
+      await axios.patch("/api/issues/" + id, {
+        status: getKeyByLabel(value),
+        position: id,
+      });
       router.refresh();
     } catch (error) {}
   };
