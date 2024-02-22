@@ -2,9 +2,14 @@
 import { Issue as PrismaIssue, User } from "@prisma/client";
 import { Text } from "@radix-ui/themes";
 import IssueCard from "./IssueCard";
-import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd'
+import {
+  DragDropContext,
+  Droppable,
+  Draggable,
+  DropResult,
+} from "@hello-pangea/dnd";
 import { useState } from "react";
-import axios from 'axios'
+import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
 import { useRouter } from "next/navigation";
 
@@ -25,19 +30,29 @@ type Issues = {
   [K in keyof IssueList]?: Issue[];
 };
 
-const BoardLayout: React.FC<BoardLayoutProps> = ({ openIssues, inProgressIssues, closedIssues }) => {
+const BoardLayout: React.FC<BoardLayoutProps> = ({
+  openIssues,
+  inProgressIssues,
+  closedIssues,
+}) => {
   const router = useRouter();
-  const [issues, setIssues] = useState<Issues>({ openIssues, inProgressIssues, closedIssues });
+  const [issues, setIssues] = useState<Issues>({
+    openIssues,
+    inProgressIssues,
+    closedIssues,
+  });
   // console.log(issues)
 
   const onDragEnd = async (result: DropResult) => {
     const { destination, source, draggableId } = result;
 
-    if (!destination) { //returns function if user dropped item outside of droppable
+    if (!destination) {
+      //returns function if user dropped item outside of droppable
       return;
     }
 
-    if (  //returns function if item didn't move from original position
+    if (
+      //returns function if item didn't move from original position
       destination.droppableId === source.droppableId &&
       destination.index === source.index
     ) {
@@ -71,23 +86,25 @@ const BoardLayout: React.FC<BoardLayoutProps> = ({ openIssues, inProgressIssues,
         // update the boardPosition of all issues in the column
         const updatedIssues = await Promise.all(
           newColumn.issueIds.map((issue, index) => {
-            if (issue) {  //check that issue is not undefined
+            if (issue) {
+              //check that issue is not undefined
               console.log(issue.id);
-              return axios.patch(`/api/issues/${issue.id}`, { boardPosition: index })
-                .then(() => ({ ...issue, boardPosition: index }));  //return updated issue
+              return axios
+                .patch(`/api/issues/${issue.id}`, { boardPosition: index })
+                .then(() => ({ ...issue, boardPosition: index })); //return updated issue
             }
           })
         );
         //update state with updated issues
         setIssues({
           ...issues,
-          [source.droppableId]: updatedIssues.filter(Boolean),  //remove undefined values
+          [source.droppableId]: updatedIssues.filter(Boolean), //remove undefined values
         });
 
         router.refresh();
       } catch (error) {
         toast.error("Changes could not be saved.");
-        console.log(error)
+        console.log(error);
       }
 
       return;
@@ -123,41 +140,46 @@ const BoardLayout: React.FC<BoardLayoutProps> = ({ openIssues, inProgressIssues,
       const statusMapping: { [key: string]: string } = {
         openIssues: "OPEN",
         inProgressIssues: "IN_PROGRESS",
-        closedIssues: "CLOSED"
+        closedIssues: "CLOSED",
       };
 
       //check if the destinationId is a valid status
       if (destinationId && statusMapping[destinationId]) {
-
         const checkedStatus = {
-          status: statusMapping[destinationId]
+          status: statusMapping[destinationId],
         };
         await axios.patch(`/api/issues/${draggableId}`, checkedStatus);
 
         // Update the boardPosition of all issues in the start and destination columns
         const updatedStartIssues = await Promise.all(
           newStart.issueIds.map((issue, index) => {
-            if (issue) {  //check that issue is not undefined
+            if (issue) {
+              //check that issue is not undefined
               console.log(issue.id);
-              return axios.patch(`/api/issues/${issue.id}`, { boardPosition: index })
-                .then(() => ({ ...issue, boardPosition: index }));  //return updated issue
+              return axios
+                .patch(`/api/issues/${issue.id}`, { boardPosition: index })
+                .then(() => ({ ...issue, boardPosition: index })); //return updated issue
             }
           })
         );
         const updatedFinishIssues = await Promise.all(
           newFinish.issueIds.map((issue, index) => {
-            if (issue) {  //check that issue is not undefined
+            if (issue) {
+              //check that issue is not undefined
               console.log(issue.id);
-              return axios.patch(`/api/issues/${issue.id}`, { boardPosition: index })
-                .then(() => ({ ...issue, boardPosition: index }));  //return updated issue
+              return axios
+                .patch(`/api/issues/${issue.id}`, { boardPosition: index })
+                .then(() => ({ ...issue, boardPosition: index })); //return updated issue
             }
           })
         );
         //update state with updated issues
         setIssues({
           ...issues,
-          [source.droppableId as keyof Issues]: updatedStartIssues.filter(Boolean),  //remove undefined values
-          [destination.droppableId as keyof Issues]: updatedFinishIssues.filter(Boolean),  //remove undefined values
+          [source.droppableId as keyof Issues]:
+            updatedStartIssues.filter(Boolean), //remove undefined values
+          [destination.droppableId as keyof Issues]:
+            updatedFinishIssues.filter(Boolean), //remove undefined values
         });
         router.refresh();
       }
@@ -174,9 +196,17 @@ const BoardLayout: React.FC<BoardLayoutProps> = ({ openIssues, inProgressIssues,
             <div ref={provided.innerRef} {...provided.droppableProps}>
               <Text>OPEN</Text>
               {openIssues.map((issue, index) => (
-                <Draggable key={issue.id} draggableId={issue.id.toString()} index={index}>
+                <Draggable
+                  key={issue.id}
+                  draggableId={issue.id.toString()}
+                  index={index}
+                >
                   {(provided) => (
-                    <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
+                    <div
+                      ref={provided.innerRef}
+                      {...provided.draggableProps}
+                      {...provided.dragHandleProps}
+                    >
                       <IssueCard issue={issue} />
                     </div>
                   )}
@@ -191,9 +221,17 @@ const BoardLayout: React.FC<BoardLayoutProps> = ({ openIssues, inProgressIssues,
             <div ref={provided.innerRef} {...provided.droppableProps}>
               <Text>IN PROGRESS</Text>
               {inProgressIssues.map((issue, index) => (
-                <Draggable key={issue.id} draggableId={issue.id.toString()} index={index}>
+                <Draggable
+                  key={issue.id}
+                  draggableId={issue.id.toString()}
+                  index={index}
+                >
                   {(provided) => (
-                    <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
+                    <div
+                      ref={provided.innerRef}
+                      {...provided.draggableProps}
+                      {...provided.dragHandleProps}
+                    >
                       <IssueCard issue={issue} />
                     </div>
                   )}
@@ -208,9 +246,17 @@ const BoardLayout: React.FC<BoardLayoutProps> = ({ openIssues, inProgressIssues,
             <div ref={provided.innerRef} {...provided.droppableProps}>
               <Text>CLOSED</Text>
               {closedIssues.map((issue, index) => (
-                <Draggable key={issue.id} draggableId={issue.id.toString()} index={index}>
+                <Draggable
+                  key={issue.id}
+                  draggableId={issue.id.toString()}
+                  index={index}
+                >
                   {(provided) => (
-                    <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
+                    <div
+                      ref={provided.innerRef}
+                      {...provided.draggableProps}
+                      {...provided.dragHandleProps}
+                    >
                       <IssueCard issue={issue} />
                     </div>
                   )}
@@ -223,7 +269,7 @@ const BoardLayout: React.FC<BoardLayoutProps> = ({ openIssues, inProgressIssues,
       </DragDropContext>
       <Toaster />
     </>
-  )
-}
+  );
+};
 
-export default BoardLayout
+export default BoardLayout;

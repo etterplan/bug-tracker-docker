@@ -9,7 +9,6 @@ type Issue = PrismaIssue & {
 };
 
 const IssueCard = ({ issue }: { issue: Issue }) => {
-
   return (
     <Grid className="mb-1">
       <Card key={issue.id}>
@@ -29,7 +28,6 @@ const IssueCard = ({ issue }: { issue: Issue }) => {
         </Flex>
       </Card>
     </Grid>
-
   );
 };
 
