@@ -10,6 +10,8 @@ type Issue = Prisma.IssueGetPayload<{
   };
 }>;
 
+export const dynamic = "force-dynamic";
+
 export default async function Board() {
   const boards = await prisma.board.findMany();
 
