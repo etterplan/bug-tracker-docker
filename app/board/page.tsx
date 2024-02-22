@@ -1,8 +1,8 @@
 import prisma from "@/prisma/client";
-import { Prisma, Status } from "@prisma/client";
-import { Grid } from "@radix-ui/themes";
+import { Prisma } from "@prisma/client";
+import { Flex } from "@radix-ui/themes";
 import { Metadata } from "next";
-import ShowBoard from "./ShowBoard";
+import BoardList from "./BoardList";
 
 type Issue = Prisma.IssueGetPayload<{
   include: {
@@ -11,38 +11,12 @@ type Issue = Prisma.IssueGetPayload<{
 }>;
 
 export default async function Board() {
-  const issuesByStatus: Record<Status, Issue[]> = {
-    [Status.TODO]: [],
-    [Status.OPEN]: [],
-    [Status.IN_PROGRESS]: [],
-    [Status.CLOSED]: [],
-  };
-
-  const boardIssues = await prisma.issue.findMany({
-    where: {
-      boardId: 1,
-    },
-    include: {
-      assignedToUser: true,
-    },
-  });
-  boardIssues.forEach((issue) => {
-    issuesByStatus[issue.status].push(issue);
-  });
-
-  for (const status in issuesByStatus) {
-    issuesByStatus[status as Status].sort((a, b) => {
-      //null positions being larger than any other number
-      const aPosition = a.position !== null ? a.position : Infinity;
-      const bPosition = b.position !== null ? b.position : Infinity;
-      return aPosition - bPosition;
-    });
-  }
+  const boards = await prisma.board.findMany();
 
   return (
-    <Grid columns={{ initial: "1", sm: "4" }} gap="3">
-      <ShowBoard issueList={issuesByStatus} />
-    </Grid>
+    <Flex direction="column" gap="3">
+      <BoardList boards={boards} />
+    </Flex>
   );
 }
 
