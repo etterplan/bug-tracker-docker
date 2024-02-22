@@ -1,12 +1,16 @@
 "use client";
 import { DragDropContext, Draggable, DropResult, Droppable } from "@hello-pangea/dnd";
-import { Issue, Status } from "@prisma/client";
+import { Issue as PrismaIssue, Status, User } from "@prisma/client";
 import { Text } from "@radix-ui/themes";
 import axios from "axios";
 import { useState, useEffect } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import IssueCard from "./IssueCard";
 import { useRouter } from "next/navigation";
+
+type Issue = PrismaIssue & {
+  assignedToUser: User | null;
+};
 
 interface Props {
   issueList: Record<Status, Issue[]>;
@@ -29,7 +33,7 @@ const ShowBoard = ({ issueList }: Props) => {
     // Reorder issues within the same column
     if (source.droppableId === destination.droppableId) {
       const status = source.droppableId;
-      const updatedIssues = [...issues[status]];
+      const updatedIssues = [...issues[status as Status]];
       const [removed] = updatedIssues.splice(source.index, 1);
       updatedIssues.splice(destination.index, 0, removed);
 
@@ -39,21 +43,23 @@ const ShowBoard = ({ issueList }: Props) => {
 
       let newPosition: number;
       if (destination.index === 0) { // Moved to the beginning of the list
-        newPosition = updatedIssues[1].position - 0.1;
+        newPosition = updatedIssues[1]?.position ? updatedIssues[1].position - 0.1 : epsilon;
       } else if (destination.index === updatedIssues.length - 1) { // Moved to the end of the list
-        newPosition = updatedIssues[updatedIssues.length - 2].position + 0.1;
+        newPosition = updatedIssues.length > 1 && updatedIssues[updatedIssues.length - 2]?.position !== null ? updatedIssues[updatedIssues.length - 2].position! + 0.1 : 0.999991;
       } else { // Moved somewhere in the middle of the list
-        const prevPosition = updatedIssues[destination.index - 1].position;
-        const nextPosition = updatedIssues[destination.index + 1].position;
-        newPosition = (prevPosition + nextPosition) / 2;
+        const prevPosition = updatedIssues[destination.index - 1]?.position;
+        const nextPosition = updatedIssues[destination.index + 1]?.position;
+        newPosition = prevPosition !== null && nextPosition !== null ? (prevPosition + nextPosition) / 2 : 0.1;
       }
 
-      if (newPosition === 0 || newPosition < 0) {
+      if (newPosition <= 0) {
         newPosition = epsilon;
       }
       //check if newPosition already exists in the position values of the other issues
-      if (updatedIssues.some(issue => issue.position === newPosition)) {
-        console.log('Duplicate position found:', newPosition);
+      if (updatedIssues.some(issue => issue.position === newPosition && issue.id !== Number(draggableId))) {
+        console.log('Duplicate position found:', newPosition, ' In: ', updatedIssues);
+        console.log('Id of draggable:', draggableId)
+        toast.error('Changes could not be saved.');
         return;
       }
 
@@ -68,7 +74,7 @@ const ShowBoard = ({ issueList }: Props) => {
         setIssuesData({ ...issues, [status]: updatedIssues });
         router.refresh();
       } catch (error) {
-        toast.error("Changes could not be saved.");
+        toast.error('Changes could not be saved.');
         console.log(error);
       }
 
@@ -76,8 +82,8 @@ const ShowBoard = ({ issueList }: Props) => {
       // Move issue to a different column
       const sourceStatus = source.droppableId;
       const destinationStatus = destination.droppableId;
-      const updatedSourceIssues = [...issues[sourceStatus]];
-      const updatedDestinationIssues = [...issues[destinationStatus]];
+      const updatedSourceIssues = [...issues[sourceStatus as Status]];
+      const updatedDestinationIssues = [...issues[destinationStatus as Status]];
       const [removed] = updatedSourceIssues.splice(source.index, 1);
       updatedDestinationIssues.splice(destination.index, 0, removed);
 
@@ -87,25 +93,27 @@ const ShowBoard = ({ issueList }: Props) => {
       let newPosition: number;
       if (updatedDestinationIssues.length > 1) {
         if (destination.index === 0) { // Moved to the beginning of the list
-          newPosition = updatedDestinationIssues.length > 1 ? updatedDestinationIssues[1].position - 0.1 : 0.1;
+          newPosition = updatedDestinationIssues[1]?.position !== null ? updatedDestinationIssues[1].position - 0.1 : 0.1;
         } else if (destination.index === updatedDestinationIssues.length - 1) { // Moved to the end of the list
-          newPosition = updatedDestinationIssues.length > 1 ? updatedDestinationIssues[updatedDestinationIssues.length - 2].position + 0.1 : 0.1;
+          newPosition = updatedDestinationIssues[updatedDestinationIssues.length - 2]?.position !== null ? updatedDestinationIssues[updatedDestinationIssues.length - 2].position! + 0.1 : 0.999991;
         } else { // Moved somewhere in the middle of the list
-          const prevPosition = updatedDestinationIssues[destination.index - 1].position;
-          const nextPosition = updatedDestinationIssues[destination.index + 1].position;
-          newPosition = (prevPosition + nextPosition) / 2;
+          const prevPosition = updatedDestinationIssues[destination.index - 1]?.position;
+          const nextPosition = updatedDestinationIssues[destination.index + 1]?.position;
+          newPosition = prevPosition !== null && nextPosition !== null ? (prevPosition + nextPosition) / 2 : 0.1;
         }
       } else {
         //if updatedDestinationIssues is empty
-        newPosition = 0.99;
+        newPosition = 0.99999;
       }
 
       if (newPosition === 0 || newPosition < 0) {
         newPosition = epsilon;
       }
       //check if newPosition already exists in the position values of the other issues
-      if (updatedDestinationIssues.some(issue => issue.position === newPosition)) {
-        console.log('Duplicate position found:', newPosition);
+      if (updatedDestinationIssues.some(issue => issue.position === newPosition && issue.id !== Number(draggableId))) {
+        console.log('Duplicate position found:', newPosition, ' In: ', updatedDestinationIssues);
+        console.log('Id of draggable:', draggableId)
+        toast.error('Changes could not be saved. Duplicate position value!');
         return;
       }
 
@@ -125,7 +133,7 @@ const ShowBoard = ({ issueList }: Props) => {
         });
         router.refresh();
       } catch (error) {
-        toast.error("Changes could not be saved.");
+        toast.error('Changes could not be saved.');
         console.log(error);
       }
     }
