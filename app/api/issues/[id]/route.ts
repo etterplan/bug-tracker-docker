@@ -34,7 +34,7 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
       assignedToUserId?: string | null;
       projectId?: number | null;
       boardId?: number | null;
-      position?: number | null;
+      position?: number;
     } = {
       title: title,
       description: description,
@@ -46,12 +46,11 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
       position: position
     };
   
-
   const updateIssue = await prisma.issue.update({
     where: { id: parseInt(params.id) },
     data: updateData
   })
-  return NextResponse.json(updateIssue)
+  return NextResponse.json(updateIssue, { status: 200 })
 
 }
 
