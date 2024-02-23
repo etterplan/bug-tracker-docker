@@ -98,15 +98,14 @@ const ShowBoard = ({ issueList }: Props) => {
 
       try {
         // Update positions in the database
+        setIssuesData({ ...issues, [status]: updatedIssues });
         const updatePostion = await axios.patch(`/api/issues/${draggableId}`, {
           position: newPosition,
         });
-        if (updatePostion.status === 200) {
-          setIssuesData({ ...issues, [status]: updatedIssues });
-          router.refresh();
-        }
+        router.refresh();
       } catch (error) {
         toast.error("Changes could not be saved.");
+        router.refresh();
         console.log(error);
       }
     } else {
@@ -150,7 +149,7 @@ const ShowBoard = ({ issueList }: Props) => {
         }
       } else {
         //if updatedDestinationIssues is empty
-        newPosition = 0.99999;
+        newPosition = Math.random() * (0.999999999 - 0.9) + 0.9;
       }
 
       if (newPosition === 0 || newPosition < 0) {
@@ -178,21 +177,19 @@ const ShowBoard = ({ issueList }: Props) => {
 
       try {
         // Update positions in the database
-
+        setIssuesData({
+          ...issues,
+          [sourceStatus]: updatedSourceIssues,
+          [destinationStatus]: updatedDestinationIssues,
+        });
         const updatePostion = await axios.patch(`/api/issues/${draggableId}`, {
           status: destinationStatus,
           position: newPosition,
         });
-        if (updatePostion.status === 200) {
-          setIssuesData({
-            ...issues,
-            [sourceStatus]: updatedSourceIssues,
-            [destinationStatus]: updatedDestinationIssues,
-          });
-          router.refresh();
-        }
+        router.refresh();
       } catch (error) {
         toast.error("Changes could not be saved.");
+        router.refresh();
         console.log(error);
       }
     }
