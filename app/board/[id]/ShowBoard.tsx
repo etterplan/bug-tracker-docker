@@ -12,6 +12,7 @@ import { useState, useEffect } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import IssueCard from "./IssueCard";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 type Issue = PrismaIssue & {
   assignedToUser: User | null;
@@ -232,7 +233,9 @@ const ShowBoard = ({ issueList }: Props) => {
                           {...provided.draggableProps}
                           {...provided.dragHandleProps}
                         >
-                          <IssueCard issue={issue} />
+                          <Link href="/issues/[id]" as={`/issues/${issue.id}`}>
+                            <IssueCard issue={issue} />
+                          </Link>
                         </div>
                       )}
                     </Draggable>
