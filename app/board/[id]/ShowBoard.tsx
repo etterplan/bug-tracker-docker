@@ -6,12 +6,13 @@ import {
   Droppable,
 } from "@hello-pangea/dnd";
 import { Issue as PrismaIssue, Status, User } from "@prisma/client";
-import { Text } from "@radix-ui/themes";
+import { Text, Flex } from "@radix-ui/themes";
 import axios from "axios";
 import { useState, useEffect } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import IssueCard from "./IssueCard";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 type Issue = PrismaIssue & {
   assignedToUser: User | null;
@@ -60,7 +61,7 @@ const ShowBoard = ({ issueList }: Props) => {
         // Moved to the end of the list
         newPosition =
           updatedIssues.length > 1 &&
-          updatedIssues[updatedIssues.length - 2]?.position !== null
+            updatedIssues[updatedIssues.length - 2]?.position !== null
             ? updatedIssues[updatedIssues.length - 2].position! + 0.1
             : 0.999991;
       } else {
@@ -134,7 +135,7 @@ const ShowBoard = ({ issueList }: Props) => {
             updatedDestinationIssues[updatedDestinationIssues.length - 2]
               ?.position !== null
               ? updatedDestinationIssues[updatedDestinationIssues.length - 2]
-                  .position! + 0.1
+                .position! + 0.1
               : 0.999991;
         } else {
           // Moved somewhere in the middle of the list
@@ -195,6 +196,19 @@ const ShowBoard = ({ issueList }: Props) => {
     }
   };
 
+  const statusText: Record<Status, string> = {
+    TODO: "To Do",
+    OPEN: "Open",
+    IN_PROGRESS: "In Progress",
+    CLOSED: "Closed",
+  };
+  const statusColors: Record<Status, string> = {
+    TODO: "bg-gray-300",
+    OPEN: "bg-red-300",
+    IN_PROGRESS: "bg-violet-300",
+    CLOSED: "bg-green-300",
+  };
+
   return (
     <>
       <DragDropContext onDragEnd={onDragEnd}>
@@ -202,25 +216,32 @@ const ShowBoard = ({ issueList }: Props) => {
           <Droppable droppableId={status} key={status}>
             {(provided) => (
               <div ref={provided.innerRef} {...provided.droppableProps}>
-                <Text>{status}</Text>
-                {issues.map((issue, index) => (
-                  <Draggable
-                    key={issue.id}
-                    draggableId={issue.id.toString()}
-                    index={index}
-                  >
-                    {(provided) => (
-                      <div
-                        ref={provided.innerRef}
-                        {...provided.draggableProps}
-                        {...provided.dragHandleProps}
-                      >
-                        <IssueCard issue={issue} />
-                      </div>
-                    )}
-                  </Draggable>
-                ))}
-                {provided.placeholder}
+                <Flex align="center">
+                  <Flex className={`${statusColors[status as Status]} rounded-full h-3.5 w-3.5 mr-2`}></Flex>
+                  <Text size="2" weight="bold">{statusText[status as Status]} <span className="bg-gray-200 rounded-full px-3">{issues.length}</span></Text>
+                </Flex>
+                <div className="border-1 my-1 py-1 rounded bg-gray-100">
+                  {issues.map((issue, index) => (
+                    <Draggable
+                      key={issue.id}
+                      draggableId={issue.id.toString()}
+                      index={index}
+                    >
+                      {(provided) => (
+                        <div
+                          ref={provided.innerRef}
+                          {...provided.draggableProps}
+                          {...provided.dragHandleProps}
+                        >
+                          <Link href="/issues/[id]" as={`/issues/${issue.id}`}>
+                            <IssueCard issue={issue} />
+                          </Link>
+                        </div>
+                      )}
+                    </Draggable>
+                  ))}
+                  {provided.placeholder}
+                </div>
               </div>
             )}
           </Droppable>
