@@ -220,7 +220,7 @@ const ShowBoard = ({ issueList }: Props) => {
                   <Flex className={`${statusColors[status as Status]} rounded-full h-3.5 w-3.5 mr-2`}></Flex>
                   <Text size="2" weight="bold">{statusText[status as Status]} <span className="bg-gray-200 rounded-full px-3">{issues.length}</span></Text>
                 </Flex>
-                <div className="border-1 my-1 py-1 rounded bg-gray-100">
+                <div className="border-1 my-1 py-1 rounded-md bg-gray-100" style={{ minHeight: "108px" }}>
                   {issues.map((issue, index) => (
                     <Draggable
                       key={issue.id}
