@@ -3,18 +3,21 @@ import { Prisma, Status } from "@prisma/client";
 import { Grid } from "@radix-ui/themes";
 import { Metadata } from "next";
 import ShowBoard from "./ShowBoard";
+import BoardFilters from "./BoardFilters";
 
 type Issue = Prisma.IssueGetPayload<{
   include: {
     assignedToUser: true;
   };
 }>;
-interface Pros {
+interface Props {
   params: { id: string };
+  searchParams: { userId: string }
 }
+
 export const dynamic = "force-dynamic";
 
-export default async function ViewBoard({ params }: Pros) {
+export default async function ViewBoard({ params, searchParams }: Props) {
   const issuesByStatus: Record<Status, Issue[]> = {
     [Status.TODO]: [],
     [Status.OPEN]: [],
@@ -22,9 +25,12 @@ export default async function ViewBoard({ params }: Pros) {
     [Status.CLOSED]: [],
   };
 
+  const userId = searchParams.userId
+  const boardId = parseInt(params.id)
+  const where = { boardId, assignedToUserId: userId };
   const boardIssues = await prisma.issue.findMany({
     where: {
-      boardId: parseInt(params.id),
+      ...where,
     },
     include: {
       assignedToUser: true,
@@ -42,11 +48,15 @@ export default async function ViewBoard({ params }: Pros) {
       return aPosition - bPosition;
     });
   }
-
   return (
-    <Grid columns={{ initial: "1", sm: "4" }} gap="3">
-      <ShowBoard issueList={issuesByStatus} />
-    </Grid>
+    <>
+      <Grid columns={{ initial: "1", sm: "4" }} gap="3" className="mb-10">
+        <BoardFilters />
+      </Grid>
+      <Grid columns={{ initial: "1", sm: "4" }} gap="3">
+        <ShowBoard issueList={issuesByStatus} />
+      </Grid>
+    </>
   );
 }
 
