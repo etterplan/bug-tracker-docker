@@ -12,24 +12,20 @@ type Issue = Prisma.IssueGetPayload<{
 }>;
 interface Props {
   params: { id: string };
-  query: { userId: string }
+  searchParams: { userId: string }
 }
 
 export const dynamic = "force-dynamic";
 
-export default async function ViewBoard({ params, query }: Props) {
+export default async function ViewBoard({ params, searchParams }: Props) {
   const issuesByStatus: Record<Status, Issue[]> = {
     [Status.TODO]: [],
     [Status.OPEN]: [],
     [Status.IN_PROGRESS]: [],
     [Status.CLOSED]: [],
   };
-  let userId;
-  if (query) {
-    console.log(query);
-    userId = query.userId;
-    console.log(userId);
-  }
+
+  const userId = searchParams.userId
   const boardId = parseInt(params.id)
   const where = { boardId, assignedToUserId: userId };
   const boardIssues = await prisma.issue.findMany({
