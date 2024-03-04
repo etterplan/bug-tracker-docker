@@ -71,6 +71,11 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
         issueId: issue.id
       }
     }),
+    prisma.issueHistory.deleteMany({
+      where: {
+        issueId: issue.id
+      }
+    }),
     prisma.issue.delete({ where: { id: issue.id } })
   ]);
   return NextResponse.json({})
