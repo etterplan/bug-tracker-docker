@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 const statuses: { label: string; value?: Status }[] = [
+  { label: "Todo", value: "TODO" },
   { label: "Open", value: "OPEN" },
   { label: "In Progress", value: "IN_PROGRESS" },
   { label: "Closed", value: "CLOSED" },
@@ -26,8 +27,7 @@ const IssueStatusFilter = () => {
     if (status && status !== "none") params.append("status", status);
     if (searchParams.get("orderBy"))
       params.append("orderBy", searchParams.get("orderBy")!);
-    if (params.get("status") !== selectedStatus)
-      params.set("page", "1")
+    if (params.get("status") !== selectedStatus) params.set("page", "1");
     const query = params.size ? "?" + params.toString() : "";
     router.push(`/issues${query}`);
   };
