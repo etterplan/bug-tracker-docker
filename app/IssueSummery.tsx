@@ -17,6 +17,7 @@ const IssueSummery = async ({ open, inProgress, closed, todo }: Props) => {
     status: Status;
     color: "gray" | "red" | "violet" | "green";
   }[] = [
+    { label: "Todo", value: todo, status: "TODO", color: "gray" },
     { label: "Open", value: open, status: "OPEN", color: "red" },
     {
       label: "In-Progress",
@@ -25,7 +26,6 @@ const IssueSummery = async ({ open, inProgress, closed, todo }: Props) => {
       color: "violet",
     },
     { label: "Closed", value: closed, status: "CLOSED", color: "green" },
-    { label: "Todo", value: todo, status: "TODO", color: "gray" },
   ];
   const session = await getServerSession(authOptions);
   return (
