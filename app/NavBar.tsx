@@ -72,9 +72,8 @@ const NavLinks = () => {
   const currentPath = usePathname();
   const links = [
     { lable: "Dashboard", href: "/" },
-    { lable: "Issues", href: "/issues" },
-    { lable: "Board", href: "/board" },
     { lable: "Projects", href: "/projects" },
+    { lable: "Issues", href: "/issues" },
   ];
   return (
     <ul className="flex space-x-6">

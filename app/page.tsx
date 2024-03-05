@@ -11,10 +11,18 @@ export default async function Home() {
   const inProgress = await prisma.issue.count({
     where: { status: "IN_PROGRESS" },
   });
+  const todo = await prisma.issue.count({
+    where: { status: "TODO" },
+  });
   return (
     <Grid columns={{ initial: "1", md: "2" }} gap="5">
       <Flex direction="column" gap="5">
-        <IssueSummery open={open} inProgress={inProgress} closed={closed} />
+        <IssueSummery
+          open={open}
+          inProgress={inProgress}
+          closed={closed}
+          todo={todo}
+        />
         <IssueChart open={open} inProgress={inProgress} closed={closed} />
       </Flex>
       <Flex direction="column" gap="5">
