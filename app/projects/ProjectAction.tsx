@@ -6,6 +6,7 @@ import {
   Callout,
   Dialog,
   Flex,
+  IconButton,
   Text,
   TextArea,
   TextField,
@@ -19,6 +20,7 @@ import ChooseBoard from "../components/ChooseProject";
 import ErrorMessage from "../components/ErrorMessage";
 import Spinner from "../components/Spinner";
 import { projectSchema } from "../validationSchema";
+import { PlusIcon } from "@radix-ui/react-icons";
 
 interface Props {
   boards: Board[];
@@ -64,7 +66,9 @@ const ProjectAction = ({ boards }: Props) => {
       <Flex wrap="wrap" gap="3" justify="center" align="center">
         <Dialog.Root open={open} onOpenChange={setOpen}>
           <Dialog.Trigger>
-            <Button>New Project</Button>
+            <IconButton radius="full">
+              <PlusIcon />
+            </IconButton>
           </Dialog.Trigger>
 
           <Dialog.Content style={{ maxWidth: 450 }}>

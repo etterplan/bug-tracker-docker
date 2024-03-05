@@ -4,15 +4,37 @@ import { Metadata } from "next";
 import IssueChart from "./IssueChart";
 import IssueSummery from "./IssueSummery";
 import LatestIssues from "./LatestIssues";
+import { getServerSession } from "next-auth";
+import authOptions from "./auth/authOptions";
+import AssignedToMe from "./AssignedToMe";
+
+export const dynamic = "force-dynamic";
 
 export default async function Home() {
-  const open = await prisma.issue.count({ where: { status: "OPEN" } });
-  const closed = await prisma.issue.count({ where: { status: "CLOSED" } });
+  const session = await getServerSession(authOptions);
+  const open = await prisma.issue.count({
+    where: {
+      status: "OPEN",
+      assignedToUserId: session?.user?.id,
+    },
+  });
+  const closed = await prisma.issue.count({
+    where: {
+      status: "CLOSED",
+      assignedToUserId: session?.user?.id,
+    },
+  });
   const inProgress = await prisma.issue.count({
-    where: { status: "IN_PROGRESS" },
+    where: {
+      status: "IN_PROGRESS",
+      assignedToUserId: session?.user?.id,
+    },
   });
   const todo = await prisma.issue.count({
-    where: { status: "TODO" },
+    where: {
+      status: "TODO",
+      assignedToUserId: session?.user?.id,
+    },
   });
   return (
     <Grid columns={{ initial: "1", md: "2" }} gap="5">
@@ -23,10 +45,15 @@ export default async function Home() {
           closed={closed}
           todo={todo}
         />
-        <IssueChart open={open} inProgress={inProgress} closed={closed} />
+        <IssueChart
+          open={open}
+          inProgress={inProgress}
+          closed={closed}
+          todo={todo}
+        />
       </Flex>
       <Flex direction="column" gap="5">
-        <LatestIssues />
+        {session ? <AssignedToMe /> : <LatestIssues />}
       </Flex>
     </Grid>
   );
