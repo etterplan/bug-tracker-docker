@@ -15,6 +15,19 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
   if (!comment) return NextResponse.json({ error: "Invalid comment" }, { status: 404 });
 
   await prisma.comment.delete({ where: { id: comment.id } })
+
+  if (comment.issueId !== null) {
+    await prisma.issueHistory.create({
+      data: {
+        action: 'COMMENT_DELETE',
+        oldValue: comment.text,
+        issueId: comment.issueId,
+        userId: session.user?.id,
+        userName: session.user?.name,
+      }
+    });
+  }
+
   return NextResponse.json({})
 
 }
@@ -26,8 +39,8 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
 
   const body = await request.json();
   const validation = commentSchema.safeParse(body);
-  if(!validation.success)
-   return NextResponse.json(validation.error.format(), {status: 400})
+  if (!validation.success)
+    return NextResponse.json(validation.error.format(), { status: 400 })
 
   const comment = await prisma.comment.findUnique({ where: { id: parseInt(params.id) } });
 
@@ -39,6 +52,19 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
     where: { id: comment.id },
     data: { text: text }
   });
+
+  if (comment.issueId !== null) {
+    await prisma.issueHistory.create({
+      data: {
+        action: 'COMMENT_EDIT',
+        oldValue: comment.text,
+        newValue: text,
+        issueId: comment.issueId,
+        userId: session.user?.id,
+        userName: session.user?.name,
+      }
+    });
+  }
 
   return NextResponse.json({});
 }
