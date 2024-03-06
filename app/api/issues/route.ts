@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
   const createHistory = await prisma.issueHistory.create({
     data:{
       action: 'CREATED',
-      newValue: `Issue '${body.title}' was created.`,
+      newValue: body.title,
       issueId: newIssue.id,
       userId: session.user?.id,
       userName: session.user?.name,
