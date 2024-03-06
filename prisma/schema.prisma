@@ -63,23 +63,24 @@ model Section {
 }
 
 model Issue {
-  id               Int       @id @default(autoincrement())
-  title            String    @db.VarChar(255)
-  description      String    @db.Text
-  status           Status    @default(TODO)
-  priority         Priority  @default(MEDIUM)
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
-  assignedToUserId String?   @db.VarChar(255)
-  assignedToUser   User?     @relation(fields: [assignedToUserId], references: [id])
+  id               Int            @id @default(autoincrement())
+  title            String         @db.VarChar(255)
+  description      String         @db.Text
+  status           Status         @default(TODO)
+  priority         Priority       @default(MEDIUM)
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  assignedToUserId String?        @db.VarChar(255)
+  assignedToUser   User?          @relation(fields: [assignedToUserId], references: [id])
   Comment          Comment[]
-  project          Project?  @relation(fields: [projectId], references: [id])
+  project          Project?       @relation(fields: [projectId], references: [id])
   projectId        Int?
   position         Float?
-  Board            Board?    @relation(fields: [boardId], references: [id])
+  Board            Board?         @relation(fields: [boardId], references: [id])
   boardId          Int?
-  Section          Section?  @relation(fields: [sectionId], references: [id])
+  Section          Section?       @relation(fields: [sectionId], references: [id])
   sectionId        Int?
+  IssueHistory     IssueHistory[]
 
   @@index([assignedToUserId])
   @@index([projectId])
@@ -102,6 +103,34 @@ model Comment {
 
   @@index([issueId])
   @@index([userId, userEmail, userImage, userName])
+}
+
+model IssueHistory {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  issue     Issue    @relation(fields: [issueId], references: [id])
+  issueId   Int
+  action    Action   @default(CREATED)
+  oldValue  String?
+  newValue  String?
+  user      User?    @relation(fields: [userId, userName], references: [id, name])
+  userId    String?
+  userName  String?
+
+  @@index([issueId])
+  @@index([userId, userName])
+}
+
+enum Action {
+  CREATED
+  STATUS_CHANGE
+  PRIORITY_CHANGE
+  ASSIGNEE_CHANGE
+  COMMENT_ADD
+  COMMENT_DELETE
+  COMMENT_EDIT
+  DESCRIPTION_CHANGE
+  TITLE_CHANGE
 }
 
 enum Status {
@@ -150,19 +179,21 @@ model Session {
 }
 
 model User {
-  id             String    @id @default(cuid())
+  id             String         @id @default(cuid())
   name           String?
-  email          String?   @unique
+  email          String?        @unique
   emailVerified  DateTime?
   image          String?
   accounts       Account[]
   sessions       Session[]
   assignedIssues Issue[]
   Comment        Comment[]
-  Project        Project?  @relation(fields: [projectId], references: [id])
+  Project        Project?       @relation(fields: [projectId], references: [id])
   projectId      Int?
+  IssueHistory   IssueHistory[]
 
   @@unique([id, email, image, name])
+  @@unique([id, name])
   @@index([projectId])
 }
 

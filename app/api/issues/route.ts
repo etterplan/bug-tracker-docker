@@ -19,6 +19,16 @@ export async function POST(request: NextRequest) {
   const newIssue = await prisma.issue.create({
     data: { title: body.title, description: body.description }
   })
+
+  const createHistory = await prisma.issueHistory.create({
+    data:{
+      action: 'CREATED',
+      newValue: `Issue '${body.title}' was created.`,
+      issueId: newIssue.id,
+      userId: session.user?.id,
+      userName: session.user?.name,
+    }
+  })
   const updateIssue = await prisma.issue.update({
     where: { id: newIssue.id }, data: { position: newIssue.id }
   })

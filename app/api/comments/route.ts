@@ -29,5 +29,15 @@ export async function POST(request: NextRequest) {
   const newComment = await prisma.comment.create({
     data: { text: body.text, issueId: body.issueId, userId: body.userId, userEmail: body.userEmail, userImage: body.userImage, userName: body.userName }
   })
+
+  await prisma.issueHistory.create({
+    data: {
+      action: 'COMMENT_ADD',
+      issueId: body.issueId,
+      userId: session.user?.id,
+      userName: session.user?.name,
+    }
+  });
+
   return NextResponse.json(newComment, { status: 201 });
 }
