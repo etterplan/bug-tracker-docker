@@ -10,6 +10,7 @@ import AssigneeSelect from "./AssigneeSelect";
 import { cache } from "react";
 import AddCommentPopover from "./AddCommentPopover";
 import Comments from "./Comments";
+import History from "./History";
 interface Pros {
   params: { id: string };
 }
@@ -17,7 +18,7 @@ interface Pros {
 const fetchIssueWithComments = cache((issueId: number) =>
   prisma.issue.findUnique({
     where: { id: issueId },
-    include: { Comment: true }
+    include: { Comment: true, IssueHistory: true }
   })
 );
 const IssueDetailsPage = async ({ params }: Pros) => {
@@ -52,6 +53,13 @@ const IssueDetailsPage = async ({ params }: Pros) => {
           )}
           <Flex direction="column" gap="5" justify="center">
             <Comments comments={issue.Comment} />
+          </Flex>
+        </Box>
+      </Grid>
+      <Grid columns={{ initial: "1", sm: "5" }} gap="5">
+        <Box className="md:col-span-4">
+          <Flex direction="column" gap="5" justify="center">
+            <History history={issue.IssueHistory} />
           </Flex>
         </Box>
       </Grid>
