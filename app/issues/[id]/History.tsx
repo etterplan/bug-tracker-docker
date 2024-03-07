@@ -21,7 +21,11 @@ const History: React.FC<HistoryProps> = ({ history }) => {
             actionText = `${history.userName} changed priority from: "${history.oldValue}" to: "${history.newValue}".`;
             break;
           case Action.ASSIGNEE_CHANGE:
-            actionText = `${history.userName} assigned "${history.newValue}" to this issue.`;
+            if (history.newValue === null) {
+              actionText = `${history.userName} unassigned the current assignee from this issue.`;
+            } else {
+              actionText = `${history.userName} assigned "${history.newValue}" to this issue.`;
+            }
             break;
           case Action.COMMENT_ADD:
             actionText = `${history.userName} added a comment.`;
