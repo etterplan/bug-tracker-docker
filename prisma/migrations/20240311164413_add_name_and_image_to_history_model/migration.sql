@@ -5,13 +5,13 @@
 
 */
 -- DropIndex
-DROP INDEX `IssueHistory_userId_userName_idx` ON `issuehistory`;
+DROP INDEX `IssueHistory_userId_userName_idx` ON `IssueHistory`;
 
 -- DropIndex
-DROP INDEX `User_id_name_key` ON `user`;
+DROP INDEX `User_id_name_key` ON `User`;
 
 -- AlterTable
-ALTER TABLE `issuehistory` ADD COLUMN `userImage` VARCHAR(191) NULL;
+ALTER TABLE `IssueHistory` ADD COLUMN `userImage` VARCHAR(191) NULL;
 
 -- CreateIndex
 CREATE INDEX `IssueHistory_userId_userName_userImage_idx` ON `IssueHistory`(`userId`, `userName`, `userImage`);
