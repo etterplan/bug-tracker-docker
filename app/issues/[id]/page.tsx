@@ -8,10 +8,7 @@ import { getServerSession } from "next-auth";
 import authOptions from "@/app/auth/authOptions";
 import AssigneeSelect from "./AssigneeSelect";
 import { cache } from "react";
-import AddCommentPopover from "./AddCommentPopover";
 import HistoryDropdown from "./HistoryDropdown";
-import Comments from "./Comments";
-import History from "./History";
 interface Pros {
   params: { id: string };
 }
