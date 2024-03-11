@@ -7,6 +7,7 @@ import LatestIssues from "./LatestIssues";
 import { getServerSession } from "next-auth";
 import authOptions from "./auth/authOptions";
 import AssignedToMe from "./AssignedToMe";
+import ChatGPTSummary from "./components/ChatGPTSummary";
 
 export const dynamic = "force-dynamic";
 
@@ -39,12 +40,21 @@ export default async function Home() {
   return (
     <Grid columns={{ initial: "1", md: "2" }} gap="5">
       <Flex direction="column" gap="5">
-        <IssueSummery
-          open={open}
-          inProgress={inProgress}
-          closed={closed}
-          todo={todo}
-        />
+        {session ? (
+          <ChatGPTSummary
+            open={open}
+            inProgress={inProgress}
+            closed={closed}
+            todo={todo}
+          />
+        ) : (
+          <IssueSummery
+            open={open}
+            inProgress={inProgress}
+            closed={closed}
+            todo={todo}
+          />
+        )}
         <IssueChart
           open={open}
           inProgress={inProgress}
