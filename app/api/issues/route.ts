@@ -27,6 +27,7 @@ export async function POST(request: NextRequest) {
       issueId: newIssue.id,
       userId: session.user?.id,
       userName: session.user?.name,
+      userImage: session.user?.image,
     }
   })
   const updateIssue = await prisma.issue.update({

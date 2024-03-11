@@ -36,6 +36,7 @@ export async function POST(request: NextRequest) {
       issueId: body.issueId,
       userId: session.user?.id,
       userName: session.user?.name,
+      userImage: session.user?.image,
     }
   });
 

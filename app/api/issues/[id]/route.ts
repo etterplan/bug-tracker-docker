@@ -60,6 +60,7 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
         issueId: issue.id,
         userId: session.user?.id,
         userName: session.user?.name,
+        userImage: session.user?.image,
       }
     });
   }
@@ -72,6 +73,7 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
         issueId: issue.id,
         userId: session.user?.id,
         userName: session.user?.name,
+        userImage: session.user?.image,
       }
     });
   }
@@ -83,6 +85,7 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
         issueId: issue.id,
         userId: session.user?.id,
         userName: session.user?.name,
+        userImage: session.user?.image,
       }
     });
   }
@@ -95,6 +98,7 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
         issueId: issue.id,
         userId: session.user?.id,
         userName: session.user?.name,
+        userImage: session.user?.image,
       }
     });
   }
@@ -107,6 +111,7 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
         issueId: issue.id,
         userId: session.user?.id,
         userName: session.user?.name,
+        userImage: session.user?.image,
       }
     });
   }
