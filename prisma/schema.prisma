@@ -113,12 +113,13 @@ model IssueHistory {
   action    Action   @default(CREATED)
   oldValue  String?
   newValue  String?
-  user      User?    @relation(fields: [userId, userName], references: [id, name])
+  user      User?    @relation(fields: [userId, userName, userImage], references: [id, name, image])
   userId    String?
   userName  String?
+  userImage String?
 
   @@index([issueId])
-  @@index([userId, userName])
+  @@index([userId, userName, userImage])
 }
 
 enum Action {
@@ -193,7 +194,7 @@ model User {
   IssueHistory   IssueHistory[]
 
   @@unique([id, email, image, name])
-  @@unique([id, name])
+  @@unique([id, name, image])
   @@index([projectId])
 }
 
