@@ -8,8 +8,7 @@ import { getServerSession } from "next-auth";
 import authOptions from "@/app/auth/authOptions";
 import AssigneeSelect from "./AssigneeSelect";
 import { cache } from "react";
-import AddCommentPopover from "./AddCommentPopover";
-import Comments from "./Comments";
+import HistoryDropdown from "./HistoryDropdown";
 interface Pros {
   params: { id: string };
 }
@@ -17,13 +16,19 @@ interface Pros {
 const fetchIssueWithComments = cache((issueId: number) =>
   prisma.issue.findUnique({
     where: { id: issueId },
-    include: { Comment: true }
+    include: { Comment: true, IssueHistory: true }
   })
 );
 const IssueDetailsPage = async ({ params }: Pros) => {
   const session = await getServerSession(authOptions);
   const issue = await fetchIssueWithComments(parseInt(params.id));
   if (!issue) notFound();
+  let loggedIn;
+  if(session){
+    loggedIn = true;
+  }else{
+    loggedIn = false;
+  }
   return (
     <Flex direction="column" gap="5" justify="center">
       <Grid columns={{ initial: "1", sm: "5" }} gap="5">
@@ -43,18 +48,7 @@ const IssueDetailsPage = async ({ params }: Pros) => {
             </Flex>
           </Box>)}
       </Grid>
-      <Grid columns={{ initial: "1", sm: "5" }} gap="5">
-        <Box className="md:col-span-4">
-          {session && (
-            <Flex width="100%" justify="end" className="mb-4">
-              <AddCommentPopover issueId={issue.id} />
-            </Flex>
-          )}
-          <Flex direction="column" gap="5" justify="center">
-            <Comments comments={issue.Comment} />
-          </Flex>
-        </Box>
-      </Grid>
+      <HistoryDropdown comments={issue.Comment} history={issue.IssueHistory} issueId={issue.id} loggedIn={loggedIn}/>
     </Flex>
   );
 };
