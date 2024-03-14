@@ -43,7 +43,7 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
   if (status !== undefined) updateData.status = status;
   if (priority !== undefined) updateData.priority = priority;
   if (assignedToUserId !== undefined) updateData.assignedToUserId = assignedToUserId;
-  if (projectId !== undefined) updateData.projectId = projectId;
+  if (projectId !== undefined) updateData.projectId = projectId, updateData.boardId = projectId;
   if (position !== undefined) updateData.position = position;
 
   const updateIssue = await prisma.issue.update({
