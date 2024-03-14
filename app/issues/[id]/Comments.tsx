@@ -42,6 +42,7 @@ const Comments: React.FC<CommentsProps> = ({ comments }) => {
   const [selectedComment, setSelectedComment] = useState<Comment | null>(null);
   const [error, setError] = useState("");
   const [isPatching, setIsPatching] = useState(false);
+  const [showAll, setShowAll] = useState(false);
 
   const deleteComment = async () => {
     if (
@@ -94,7 +95,7 @@ const Comments: React.FC<CommentsProps> = ({ comments }) => {
 
   return (
     <Flex direction="column" gap="6" justify="center">
-      {[...comments].reverse().map((comment) => (
+      {[...comments].slice(showAll ? 0 : comments.length - 4).reverse().map((comment) => (
         <Flex
           key={comment.id}
           className="border-b-2 border-gray-200"
@@ -220,6 +221,11 @@ const Comments: React.FC<CommentsProps> = ({ comments }) => {
           </AlertDialog.Root>
         </Flex>
       ))}
+      {comments.length > 4 && (
+        <Button variant="soft" color="gray" onClick={() => setShowAll(!showAll)}>
+          {showAll ? 'Show Less' : 'Show All Comments'}
+        </Button>
+      )}
     </Flex>
   );
 };
