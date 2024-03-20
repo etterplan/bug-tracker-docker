@@ -4,6 +4,7 @@ import { Grid } from "@radix-ui/themes";
 import { Metadata } from "next";
 import ShowBoard from "./ShowBoard";
 import BoardFilters from "./BoardFilters";
+import OverviewBtn from "./OverviewBtn";
 
 type Issue = Prisma.IssueGetPayload<{
   include: {
@@ -50,7 +51,9 @@ export default async function ViewBoard({ params, searchParams }: Props) {
   }
   return (
     <>
+
       <Grid columns={{ initial: "1", sm: "4" }} gap="3" className="mb-10">
+        <OverviewBtn id={params.id}/>
         <BoardFilters />
       </Grid>
       <Grid columns={{ initial: "1", sm: "4" }} gap="3">
