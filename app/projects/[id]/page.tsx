@@ -52,7 +52,7 @@ export default async function ViewBoard({ params, searchParams }: Props) {
   return (
     <>
 
-      <Grid columns={{ initial: "1", sm: "4" }} gap="3" className="mb-10">
+      <Grid columns={{ initial: "1", sm: "6" }} gap="3" className="mb-10">
         <OverviewBtn id={params.id}/>
         <BoardFilters />
       </Grid>
