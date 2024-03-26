@@ -1,13 +1,12 @@
 import { Card, Flex, Heading, Text, Box } from '@radix-ui/themes';
-import ProjectStatusBadge from '../../../components/ProjectStatusBadge'
+import ProjectStatusBadge from '../../components/ProjectStatusBadge'
 import { Project } from "@prisma/client";
 
 interface Props {
-  project: Project
+  project: Project;
 }
 
 const ProjectInfo = ({ project }: Props) => {
-
   return (
     <Box className="md:col-span-4">
       <Heading>{project.name}</Heading>
