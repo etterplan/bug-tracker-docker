@@ -1,9 +1,8 @@
 import prisma from "@/prisma/client";
 import { Prisma, Status } from "@prisma/client";
-import { Grid } from "@radix-ui/themes";
 import { Metadata } from "next";
-import ShowBoard from "./ShowBoard";
-import BoardFilters from "./BoardFilters";
+import ProjectTabs from "./ProjectTabs";
+import { notFound } from "next/navigation";
 
 type Issue = Prisma.IssueGetPayload<{
   include: {
@@ -18,6 +17,17 @@ interface Props {
 export const dynamic = "force-dynamic";
 
 export default async function ViewBoard({ params, searchParams }: Props) {
+
+  const projectId = Number(params.id)
+  const project = await prisma.project.findUnique({
+    where: {
+      id: projectId
+    },
+    include: {
+      
+    },
+  });
+  if(!project) return(notFound())
   const issuesByStatus: Record<Status, Issue[]> = {
     [Status.TODO]: [],
     [Status.OPEN]: [],
@@ -49,14 +59,7 @@ export default async function ViewBoard({ params, searchParams }: Props) {
     });
   }
   return (
-    <>
-      <Grid columns={{ initial: "1", sm: "4" }} gap="3" className="mb-10">
-        <BoardFilters />
-      </Grid>
-      <Grid columns={{ initial: "1", sm: "4" }} gap="3">
-        <ShowBoard issueList={issuesByStatus} />
-      </Grid>
-    </>
+      < ProjectTabs issuesByStatus={issuesByStatus} project= {project}/>
   );
 }
 
