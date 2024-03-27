@@ -1,6 +1,8 @@
+'use client'
 import { Card, Flex, Heading, Text, Box } from '@radix-ui/themes';
 import ProjectStatusBadge from '../../components/ProjectStatusBadge'
 import { Project } from "@prisma/client";
+import EditProjectButton from './EditProjectButton';
 
 interface Props {
   project: Project;
@@ -20,6 +22,7 @@ const ProjectInfo = ({ project }: Props) => {
       <Card className="prose max-w-full" my="1">
         <Text>{project.description}</Text>
       </Card>
+      <EditProjectButton projectId={project.id}/>
     </Box>
   )
 }
