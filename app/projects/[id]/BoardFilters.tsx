@@ -1,9 +1,10 @@
 import BoardAssigneeFilter from "./BoardAssigneeFilter"
-import { Flex } from "@radix-ui/themes";
+import { Flex, Text } from "@radix-ui/themes";
 
 const BoardFilters = () => {
   return (
-    <Flex>
+    <Flex direction='column'>
+      <Text>Filters:</Text>
       <BoardAssigneeFilter />
     </Flex>
   )
