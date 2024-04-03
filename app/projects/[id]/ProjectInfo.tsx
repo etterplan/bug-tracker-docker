@@ -2,8 +2,9 @@
 import { Card, Flex, Heading, Text, Box, Button, TextArea } from '@radix-ui/themes';
 import ProjectStatusBadge from '../../components/ProjectStatusBadge'
 import { Project } from "@prisma/client";
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import axios from "axios";
+import { useRouter } from "next/navigation";
 
 interface Props {
   project: Project;
@@ -11,27 +12,52 @@ interface Props {
 
 const ProjectInfo = ({ project }: Props) => {
   const [isEditing, setIsEditing] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
   const [description, setDescription] = useState(project.description)
+  const [tempDescription, setTempDescription] = useState(project.description);
   const [error, setError] = useState('');
+  const route = useRouter();
+  const textAreaRef = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    if (isEditing) {
+      const textarea = textAreaRef.current;
+      textarea?.focus();
+      const value = textarea?.value;
+      textarea?.setSelectionRange(value?.length || 0, value?.length || 0);
+    }
+  }, [isEditing]);
 
   const handleEditClick = () => {
     setIsEditing(true)
+    setTempDescription(description);
   }
 
   const handleDescriptionChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setDescription(event.target.value)
+    setTempDescription(event.target.value);
   }
 
   const handleSaveClick = async () => {
+    setIsLoading(true);
     try {
 
-      await axios.patch("/api/projects/" + project.id, { description: description });
+      await axios.patch("/api/projects/" + project.id, { description: tempDescription })
+        .then(() => {
+          setDescription(tempDescription);
+        });
 
-
+      setIsEditing(false)
+      route.refresh();
     } catch (error) {
       setError((error as Error).message);
     }
-    setIsEditing(false)
+    setIsLoading(false);
+  }
+
+  const handleCancelClick = () => {
+    setIsEditing(false);
+    setTempDescription(description);
+    setError('')
   }
 
   return (
@@ -47,14 +73,24 @@ const ProjectInfo = ({ project }: Props) => {
       <Card className="prose max-w-full" my="1">
         {isEditing ? (
           <Flex direction='column'>
-            <TextArea value={description} onChange={handleDescriptionChange} />
-            <Flex justify='end'>
-              <Button onClick={handleSaveClick}>Save</Button>
+            <Flex direction='column' pb='3'>
+              <TextArea ref={textAreaRef} value={tempDescription} onChange={handleDescriptionChange} autoFocus />
+            </Flex>
+            <Flex>
+              <Text size="1" color="red">
+                {error}
+              </Text>
+            </Flex>
+            <Flex justify='end' gap='2'>
+              <Button color='gray' variant='soft' onClick={handleCancelClick} >Cancel</Button>
+              <Button onClick={handleSaveClick} disabled={isLoading}>Save</Button>
             </Flex>
           </Flex>
         ) : (
           <Flex direction='column'>
-            <Text>{description}</Text>
+            <Flex direction='column' pb='3'>
+              <Text>{description}</Text>
+            </Flex>
             <Flex justify='end'>
               <Button onClick={handleEditClick}>Edit</Button>
             </Flex>
