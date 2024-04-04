@@ -5,12 +5,14 @@ import { Project } from "@prisma/client";
 import { useState, useRef, useEffect } from 'react'
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 interface Props {
   project: Project;
 }
 
 const ProjectInfo = ({ project }: Props) => {
+  const { data: session } = useSession();
   const [isEditing, setIsEditing] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [description, setDescription] = useState(project.description)
@@ -91,9 +93,12 @@ const ProjectInfo = ({ project }: Props) => {
             <Flex direction='column' pb='3'>
               <Text>{description}</Text>
             </Flex>
-            <Flex justify='end'>
-              <Button onClick={handleEditClick}>Edit</Button>
-            </Flex>
+            {session &&
+              session.user && (
+                <Flex justify='end'>
+                  <Button onClick={handleEditClick}>Edit</Button>
+                </Flex>
+              )}
           </Flex>
         )}
       </Card>
