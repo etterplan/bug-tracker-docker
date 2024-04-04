@@ -6,6 +6,7 @@ import { useState, useRef, useEffect } from 'react'
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
+import AddUser from './AddUser';
 
 interface Props {
   project: Project;
@@ -102,6 +103,7 @@ const ProjectInfo = ({ project }: Props) => {
           </Flex>
         )}
       </Card>
+      <AddUser />
     </Box>
   )
 }
