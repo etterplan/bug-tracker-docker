@@ -11,7 +11,6 @@ const BoardAssigneeFilter = () => {
   const searchParams = useSearchParams();
   const pathName = usePathname()
   
-  console.log(pathName)
   const [selectedUser, setSelectedUser] = useState(
     searchParams.get("userId") || ""
   );
