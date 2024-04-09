@@ -42,6 +42,7 @@ const UserComboBox: FC<UserComboBoxProps> = ({ onValueChange }) => {
   }
 
   return (
+    <div>
     <RadixSelect.Root
       value={value}
       onValueChange={(value) => {
@@ -118,6 +119,7 @@ const UserComboBox: FC<UserComboBoxProps> = ({ onValueChange }) => {
         </RadixSelect.Content>
       </ComboboxProvider>
     </RadixSelect.Root>
+    </div>
   );
 }
 
