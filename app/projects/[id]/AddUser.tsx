@@ -41,7 +41,7 @@ const AddUser = ({ projectId }: Props) => {
     <>
       <Flex direction='column' py='1'>
         <Text weight='medium'>Add user to project</Text>
-        <Flex justify='start' gap='2' align='center' py='1' wrap='wrap'>
+        <Flex justify='start' gap='2' align='center' my='1' wrap='wrap'>
           <UserComboBox onValueChange={handleUserChange} />
           <Button onClick={handleAddUser} disabled={!session || isPatching}>Add User to Project</Button>
         </Flex>
