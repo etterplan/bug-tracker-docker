@@ -5,14 +5,13 @@ import { Flex, Button, Text } from '@radix-ui/themes';
 import axios from 'axios';
 import { useSession } from "next-auth/react";
 import { useRouter } from 'next/navigation';
-import { Project } from "@prisma/client";
 import toast, { Toaster } from "react-hot-toast";
 
 interface Props {
-  project: Project;
+  projectId: number;
 }
 
-const AddUser = ({ project }: Props) => {
+const AddUser = ({ projectId }: Props) => {
   const [selectedUserId, setSelectedUserId] = useState('');
   const { data: session } = useSession();
   const [isPatching, setIsPatching] = useState(false);
@@ -26,7 +25,7 @@ const AddUser = ({ project }: Props) => {
     if (!selectedUserId) return;
     try {
       setIsPatching(true)
-      await axios.patch('/api/projects/' + project.id, {
+      await axios.patch('/api/projects/' + projectId, {
         userId: selectedUserId
       });
       router.refresh();
