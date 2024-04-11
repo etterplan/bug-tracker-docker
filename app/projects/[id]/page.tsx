@@ -24,10 +24,11 @@ export default async function ViewBoard({ params, searchParams }: Props) {
       id: projectId
     },
     include: {
-      
+      members: true,
     },
   });
   if(!project) return(notFound())
+
   const issuesByStatus: Record<Status, Issue[]> = {
     [Status.TODO]: [],
     [Status.OPEN]: [],
