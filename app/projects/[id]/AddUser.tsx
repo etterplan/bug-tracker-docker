@@ -5,14 +5,13 @@ import { Flex, Button, Text } from '@radix-ui/themes';
 import axios from 'axios';
 import { useSession } from "next-auth/react";
 import { useRouter } from 'next/navigation';
-import { Project } from "@prisma/client";
 import toast, { Toaster } from "react-hot-toast";
 
 interface Props {
-  project: Project;
+  projectId: number;
 }
 
-const AddUser = ({ project }: Props) => {
+const AddUser = ({ projectId }: Props) => {
   const [selectedUserId, setSelectedUserId] = useState('');
   const { data: session } = useSession();
   const [isPatching, setIsPatching] = useState(false);
@@ -26,7 +25,7 @@ const AddUser = ({ project }: Props) => {
     if (!selectedUserId) return;
     try {
       setIsPatching(true)
-      await axios.patch('/api/projects/' + project.id, {
+      await axios.patch('/api/projects/' + projectId, {
         userId: selectedUserId
       });
       router.refresh();
@@ -42,7 +41,7 @@ const AddUser = ({ project }: Props) => {
     <>
       <Flex direction='column' py='1'>
         <Text weight='medium'>Add user to project</Text>
-        <Flex justify='start' gap='2' align='center' py='1' wrap='wrap'>
+        <Flex justify='start' gap='2' align='center' my='1' wrap='wrap'>
           <UserComboBox onValueChange={handleUserChange} />
           <Button onClick={handleAddUser} disabled={!session || isPatching}>Add User to Project</Button>
         </Flex>

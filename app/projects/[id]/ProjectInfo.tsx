@@ -1,12 +1,17 @@
 'use client'
 import { Card, Flex, Heading, Text, Box, Button, TextArea } from '@radix-ui/themes';
 import ProjectStatusBadge from '../../components/ProjectStatusBadge'
-import { Project } from "@prisma/client";
+import { Project as PrismaProject, User } from "@prisma/client";
 import { useState, useRef, useEffect } from 'react'
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import AddUser from './AddUser';
+import ShowMembers from './ShowMembers';
+
+interface Project extends PrismaProject {
+  members?: User[];
+}
 
 interface Props {
   project: Project;
@@ -21,6 +26,8 @@ const ProjectInfo = ({ project }: Props) => {
   const [error, setError] = useState('');
   const route = useRouter();
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
+  const projectId = project.id;
+  const members = project.members
 
   useEffect(() => {
     if (isEditing) {
@@ -44,7 +51,7 @@ const ProjectInfo = ({ project }: Props) => {
     setIsLoading(true);
     try {
 
-      await axios.patch("/api/projects/" + project.id, { description: tempDescription })
+      await axios.patch("/api/projects/" + projectId, { description: tempDescription })
         .then(() => {
           setDescription(tempDescription);
         });
@@ -68,7 +75,7 @@ const ProjectInfo = ({ project }: Props) => {
       <Heading>{project.name}</Heading>
       <Flex className="space-x-3" mt="2">
         <Text>Created: {project.createdAt.toDateString()}</Text>
-        <ProjectStatusBadge status={project.status} id={project.id} />
+        <ProjectStatusBadge status={project.status} id={projectId} />
       </Flex>
       <Flex className="space-x-3" mb="2">
         <Text>Updated: {project.updatedAt.toDateString()}</Text>
@@ -103,7 +110,8 @@ const ProjectInfo = ({ project }: Props) => {
           </Flex>
         )}
       </Card>
-      <AddUser project= {project}/>
+      <AddUser projectId= {projectId}/>
+      <ShowMembers members= {members}/>
     </Box>
   )
 }
