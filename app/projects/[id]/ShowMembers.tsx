@@ -1,6 +1,7 @@
 import { User } from "@prisma/client";
 import { Flex, Text, Strong, Avatar, Card, Box } from "@radix-ui/themes";
 import { PersonIcon } from "@radix-ui/react-icons";
+import RemoveMemberBtn from "./RemoveMemberBtn";
 
 interface Props {
   members?: User[];
@@ -9,7 +10,7 @@ interface Props {
 const ShowMembers = ({ members = [] }: Props) => {
 
   return (
-    <Flex direction='column'mt='3'>
+    <Flex direction='column' mt='3'>
       <Text weight='medium'>Project Members</Text>
       <Flex my='2' gap='3'>
         {members.map((member) => (
@@ -29,6 +30,7 @@ const ShowMembers = ({ members = [] }: Props) => {
                   {member.email}
                 </Text>
               </Flex>
+              <RemoveMemberBtn member={member} />
             </Flex>
           </Card>
         ))}
