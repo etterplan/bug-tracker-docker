@@ -1,5 +1,5 @@
 'use client'
-import { IconButton } from "@radix-ui/themes";
+import { IconButton, Flex } from "@radix-ui/themes";
 import { Cross1Icon } from "@radix-ui/react-icons";
 import axios from "axios";
 import { User } from "@prisma/client";
@@ -34,12 +34,12 @@ const RemoveMemberBtn = ({ member }: Props) => {
   };
 
   return (
-    <>
-      <IconButton color='red' onClick={handleRemoveMember} disabled={!session || isPatching}>
-        <Cross1Icon width="18" height="18" />
+    <Flex className='-mt-3 -mr-3' >
+      <IconButton variant="soft" size='1' color='gray' onClick={handleRemoveMember} disabled={!session || isPatching}>
+        <Cross1Icon />
       </IconButton>
       <Toaster />
-    </>
+    </Flex>
   )
 }
 
