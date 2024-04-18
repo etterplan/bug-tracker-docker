@@ -1,6 +1,6 @@
 'use client'
 import './UserComboBox.css';
-import { useState, useMemo, startTransition, FC } from 'react';
+import { useState, useMemo, startTransition, FC, useEffect, useCallback } from 'react';
 import { Flex } from '@radix-ui/themes';
 import { Combobox, ComboboxItem, ComboboxList, ComboboxProvider } from "@ariakit/react";
 import * as RadixSelect from "@radix-ui/react-select";
@@ -11,20 +11,30 @@ import { Skeleton } from '@/app/components';
 
 interface UserComboBoxProps {
   onValueChange: (value: string) => void;
+  userAdded: boolean;
+  setUserAdded: (value: boolean) => void;
 }
 
-const UserComboBox: FC<UserComboBoxProps> = ({ onValueChange }) => {
+const UserComboBox: FC<UserComboBoxProps> = ({ onValueChange, userAdded, setUserAdded}) => {
   const { data: users, error, isLoading } = useUser();
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState('');
   const [searchValue, setSearchValue] = useState('');
 
-  const clearSelection = () => {
+  const clearSelection = useCallback(() => {
     setValue('');
     setSearchValue('');
     setOpen(false);
     onValueChange('')
-  };
+  }, [setValue, setSearchValue, setOpen, onValueChange]);
+
+  useEffect(() => {
+    if (userAdded) {
+      clearSelection();
+      setUserAdded(false);
+    }
+  }, [userAdded, setUserAdded, clearSelection])
+
   const matches = useMemo(() => {
     if (isLoading || error || !users) return [];
     if (!searchValue) return users;
