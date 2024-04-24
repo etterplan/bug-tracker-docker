@@ -110,7 +110,7 @@ const ProjectInfo = ({ project }: Props) => {
           </Flex>
         )}
       </Card>
-      <AddUser projectId= {projectId}/>
+      <AddUser projectId= {projectId} members= {members}/>
       <ShowMembers members= {members}/>
     </Box>
   )
