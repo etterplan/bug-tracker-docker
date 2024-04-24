@@ -6,17 +6,16 @@ import { Combobox, ComboboxItem, ComboboxList, ComboboxProvider } from "@ariakit
 import * as RadixSelect from "@radix-ui/react-select";
 import { matchSorter } from 'match-sorter'
 import { MagnifyingGlassIcon, ChevronDownIcon, CheckIcon, Cross1Icon } from '@radix-ui/react-icons';
-import useUser from './useUser'
-import { Skeleton } from '@/app/components';
+import { User } from "@prisma/client";
 
 interface UserComboBoxProps {
   onValueChange: (value: string) => void;
   userAdded: boolean;
   setUserAdded: (value: boolean) => void;
+  users: User[];
 }
 
-const UserComboBox: FC<UserComboBoxProps> = ({ onValueChange, userAdded, setUserAdded}) => {
-  const { data: users, error, isLoading } = useUser();
+const UserComboBox: FC<UserComboBoxProps> = ({ onValueChange, userAdded, setUserAdded, users}) => {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState('');
   const [searchValue, setSearchValue] = useState('');
@@ -36,7 +35,7 @@ const UserComboBox: FC<UserComboBoxProps> = ({ onValueChange, userAdded, setUser
   }, [userAdded, setUserAdded, clearSelection])
 
   const matches = useMemo(() => {
-    if (isLoading || error || !users) return [];
+    if (!users) return [];
     if (!searchValue) return users;
     const keys = ["name", "id"];
     const matches = matchSorter(users, searchValue, { keys });
@@ -45,11 +44,7 @@ const UserComboBox: FC<UserComboBoxProps> = ({ onValueChange, userAdded, setUser
       matches.push(selectedUser);
     }
     return matches;
-  }, [searchValue, value, users, error, isLoading]);
-
-  if (isLoading) {
-    return <Skeleton height={"2rem"} />;
-  }
+  }, [searchValue, value, users]);
 
   return (
     <div>
