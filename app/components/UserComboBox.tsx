@@ -56,6 +56,7 @@ const UserComboBox: FC<UserComboBoxProps> = ({ onValueChange, userAdded, setUser
       }}
       open={open}
       onOpenChange={setOpen}
+      disabled={!users || users.length === 0}
     >
       <ComboboxProvider
         open={open}
