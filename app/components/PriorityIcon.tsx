@@ -1,6 +1,6 @@
 "use client";
 import { Priority } from "@prisma/client";
-import { Badge, Select, Tooltip } from "@radix-ui/themes";
+import { Badge, Select, Tooltip, Text, Flex } from "@radix-ui/themes";
 import axios from "axios";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
@@ -22,7 +22,7 @@ const statusMap: Record<
   HIGH: { label: "High", color: "red", icon: <RxDoubleArrowUp size={14} /> },
   LOW: { label: "Low", color: "green", icon: <RxDoubleArrowDown size={14} /> },
   MEDIUM: {
-    label: "medium",
+    label: "Medium",
     color: "iris",
     icon: <RxDragHandleHorizontal size={14} />,
   },
@@ -48,7 +48,7 @@ const PriorityIcon = ({ priority, id }: { priority: Priority; id: number }) => {
         priority: getKeyByLabel(value),
       });
       router.refresh();
-    } catch (error) {}
+    } catch (error) { }
   };
   return (
     <Select.Root
@@ -61,7 +61,10 @@ const PriorityIcon = ({ priority, id }: { priority: Priority; id: number }) => {
       <Select.Content>
         {Object.entries(statusMap).map(([priority, { label, icon, color }]) => (
           <Select.Item value={label} key={priority}>
-            <Badge color={color}>{icon}</Badge>
+            <Flex align='center' gap='1'>
+              <Badge color={color}>{icon}</Badge>
+              <Text>{label}</Text>
+            </Flex>
           </Select.Item>
         ))}
       </Select.Content>
