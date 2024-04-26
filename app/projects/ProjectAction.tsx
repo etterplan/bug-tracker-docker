@@ -55,9 +55,9 @@ const ProjectAction = ({ boards }: Props) => {
       setSubmitting(false);
     }
   });
-
+  
   return (
-    <div className="flex flex-wrap justify-center sm:justify-between gap-3">
+    <Flex justify='end'>
       {error && (
         <Callout.Root color="red" className="mb-5">
           <Callout.Text>{error}</Callout.Text>
@@ -117,7 +117,7 @@ const ProjectAction = ({ boards }: Props) => {
           </Dialog.Content>
         </Dialog.Root>
       </Flex>
-    </div>
+    </Flex>
   );
 };
 
