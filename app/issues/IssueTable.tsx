@@ -2,8 +2,7 @@ import { Issue, Project, Status } from "@prisma/client";
 import { ArrowDownIcon, ArrowUpIcon } from "@radix-ui/react-icons";
 import { Table } from "@radix-ui/themes";
 import Link from "next/link";
-import { IssueStatusBadge, PriorityIcon } from "../components";
-import ChooseProject from "../components/ChooseProject";
+import IssueTableInfo from "./IssueTableInfo";
 
 export interface IssuseQuery {
   status: Status;
@@ -37,7 +36,7 @@ const IssueTable = ({ searchParams, issues, projects }: Props) => {
                     orderBy: column.value,
                     sortOrder:
                       searchParams.orderBy === column.value &&
-                      searchParams.sortOrder === "asc"
+                        searchParams.sortOrder === "asc"
                         ? "desc"
                         : "asc",
                   },
@@ -57,35 +56,7 @@ const IssueTable = ({ searchParams, issues, projects }: Props) => {
           ))}
         </Table.Row>
       </Table.Header>
-      <Table.Body>
-        {issues.map((issue) => (
-          <Table.Row key={issue.id}>
-            <Table.Cell>
-              <Link href={`/issues/${issue.id}`}>{issue.title}</Link>
-              <div className="flex md:hidden gap-1">
-                <IssueStatusBadge status={issue.status} id={issue.id} />
-                <PriorityIcon priority={issue.priority} id={issue.id} />
-              </div>
-            </Table.Cell>
-            <Table.Cell className="hidden md:table-cell">
-              <IssueStatusBadge status={issue.status} id={issue.id} />
-            </Table.Cell>
-            <Table.Cell className="hidden md:table-cell">
-              {issue.createdAt.toDateString()}
-            </Table.Cell>
-            <Table.Cell className="hidden md:table-cell">
-              <PriorityIcon priority={issue.priority} id={issue.id} />
-            </Table.Cell>
-            <Table.Cell className="hidden md:table-cell">
-              <ChooseProject
-                projects={projects}
-                issueId={issue.id}
-                projectId={issue.projectId}
-              />
-            </Table.Cell>
-          </Table.Row>
-        ))}
-      </Table.Body>
+      <IssueTableInfo projects={projects} issues={issues} />
     </Table.Root>
   );
 };
@@ -95,16 +66,16 @@ const columns: {
   value: keyof Issue;
   className?: string;
 }[] = [
-  { label: "Issue", value: "title" },
-  { label: "Status", value: "status", className: "hidden md:table-cell" },
-  { label: "Created", value: "createdAt", className: "hidden md:table-cell" },
-  { label: "Priority", value: "priority", className: "hidden md:table-cell" },
-  {
-    label: "AssignToProject",
-    value: "projectId",
-    className: "hidden md:table-cell",
-  },
-];
+    { label: "Issue", value: "title" },
+    { label: "Status", value: "status", className: "hidden md:table-cell" },
+    { label: "Created", value: "createdAt", className: "hidden md:table-cell" },
+    { label: "Priority", value: "priority", className: "hidden md:table-cell" },
+    {
+      label: "AssignToProject",
+      value: "projectId",
+      className: "hidden md:table-cell",
+    },
+  ];
 
 export const columnNames = columns.map((column) => column.value);
 
