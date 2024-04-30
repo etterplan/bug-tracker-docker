@@ -1,15 +1,20 @@
+'use client'
 import { IssueHistory, Action } from '@prisma/client';
-import { Flex, Badge, Text, Avatar, Strong } from '@radix-ui/themes';
+import { Flex, Badge, Text, Avatar, Strong, Button } from '@radix-ui/themes';
 import { PersonIcon } from "@radix-ui/react-icons";
+import { useState } from "react";
 
 interface HistoryProps {
   history: IssueHistory[];
 }
 
 const History: React.FC<HistoryProps> = ({ history }) => {
+  const [showAll, setShowAll] = useState(false);
+  const historyToShow = showAll ? history : history.slice(0, 4);
+
   return (
     <Flex direction='column' gap='6' justify='center'>
-      {[...history].reverse().map((history) => {
+      {[...historyToShow].reverse().map((history) => {
         let actionText = '';
         switch (history.action) {
           case Action.CREATED:
@@ -74,6 +79,11 @@ const History: React.FC<HistoryProps> = ({ history }) => {
           </Flex>
         )
       })}
+      {history.length > 4 && (
+        <Button variant="soft" color="gray" onClick={() => setShowAll(!showAll)}>
+          {showAll ? 'Show Less' : 'Show All History'}
+        </Button>
+      )}
     </Flex>
   )
 }

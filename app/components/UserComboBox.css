@@ -1,14 +1,22 @@
 .select-container{
   display: inline-flex;
   background-color: hsl(204 20% 100%);
-  box-shadow:
-    0 1px 3px 0 rgb(0 0 0 / 0.1),
-    0 1px 2px -1px rgb(0 0 0 / 0.1);
+  /* box-shadow:
+    0 1px 1px 0 rgb(0 0 0 / 0.1),
+    0 1px 1px 0 rgb(0 0 0 / 0.1); */
+  border: 1px solid #19140035;
+  border-radius: 0.25rem 0.25rem 0.25rem 0.25rem;
+  color: #191400d0;
+  font-weight:300;
+}
+
+.select-container:hover{
+  border: 1px solid #19140043;
 }
 
 .select {
   display: inline-flex;
-  height: 2.5rem;
+  height: 2.25rem;
   align-items: center;
   justify-content: center;
   gap: 0.25rem;
@@ -16,19 +24,14 @@
   background-color: hsl(204 20% 100%);
   padding-left: 1rem;
   padding-right: 1rem;
-  color: hsl(204 4% 0%);
   color-scheme: light;
 }
 
-.select:hover {
-  background-color: #ede9fe;
-}
-
 .clear-selection-btn{
+  border-radius: 0 0.25rem 0.25rem 0;
   background-color: hsl(204 20% 100%);
   padding-left: 0.3rem;
   padding-right: 0.3rem;
-  color: hsl(204 4% 0%);
   color-scheme: light;
   display: inline-flex;
   align-items: center;
@@ -36,13 +39,13 @@
 }
 
 .clear-selection-btn:hover {
-  background-color: #ede9fe;
+  background-color: #8686861d;
   cursor: pointer;
 }
 
 @media (min-width: 640px) {
   .select {
-    height: 2.25rem;
+    height: 2rem;
     font-size: 15px;
   }
 }
@@ -71,7 +74,7 @@
 }
 
 .combobox {
-  height: 2.5rem;
+  height: 2.25rem;
   appearance: none;
   border-radius: 0.25rem;
   background-color: hsl(204 4% 0% / 0.05);
@@ -88,7 +91,7 @@
 
 @media (min-width: 640px) {
   .combobox {
-    height: 2.25rem;
+    height: 2rem;
     font-size: 15px;
   }
 }
@@ -108,7 +111,7 @@
 .item {
   position: relative;
   display: flex;
-  height: 2.5rem;
+  height: 2.25rem;
   cursor: default;
   scroll-margin-top: 0.25rem;
   scroll-margin-bottom: 0.25rem;
@@ -122,12 +125,13 @@
 }
 
 .item[data-active-item] {
-  background-color: #ddd6fe;
+  background-color: #f76b15;
+  color: white;
 }
 
 @media (min-width: 640px) {
   .item {
-    height: 2.25rem;
+    height: 2rem;
     font-size: 15px;
   }
 }

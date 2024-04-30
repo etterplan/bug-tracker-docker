@@ -1,37 +1,28 @@
 "use client";
 import { Priority } from "@prisma/client";
-import { Badge, Select, Tooltip } from "@radix-ui/themes";
+import { Badge, Select, Flex } from "@radix-ui/themes";
 import axios from "axios";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import {
-  RxArrowDown,
-  RxDoubleArrowDown,
-  RxDoubleArrowUp,
-  RxDragHandleHorizontal,
-  RxMinusCircled,
-} from "react-icons/rx";
+
 const statusMap: Record<
   Priority,
   {
     label: string;
     color: "red" | "green" | "iris" | "orange" | "sky";
-    icon: any;
   }
 > = {
-  HIGH: { label: "High", color: "red", icon: <RxDoubleArrowUp size={14} /> },
-  LOW: { label: "Low", color: "green", icon: <RxDoubleArrowDown size={14} /> },
+  HIGH: { label: "High", color: "red" },
+  LOW: { label: "Low", color: "green" },
   MEDIUM: {
-    label: "medium",
-    color: "iris",
-    icon: <RxDragHandleHorizontal size={14} />,
+    label: "Medium",
+    color: "iris"
   },
   BLOCKER: {
     label: "Blocker",
-    color: "orange",
-    icon: <RxMinusCircled size={14} />,
+    color: "orange"
   },
-  MINOR: { label: "Minor", color: "sky", icon: <RxArrowDown size={14} /> },
+  MINOR: { label: "Minor", color: "sky" },
 };
 
 const PriorityIcon = ({ priority, id }: { priority: Priority; id: number }) => {
@@ -48,7 +39,7 @@ const PriorityIcon = ({ priority, id }: { priority: Priority; id: number }) => {
         priority: getKeyByLabel(value),
       });
       router.refresh();
-    } catch (error) {}
+    } catch (error) { }
   };
   return (
     <Select.Root
@@ -59,9 +50,11 @@ const PriorityIcon = ({ priority, id }: { priority: Priority; id: number }) => {
     >
       <Select.Trigger color={statusMap[priority].color} variant="soft" />
       <Select.Content>
-        {Object.entries(statusMap).map(([priority, { label, icon, color }]) => (
+        {Object.entries(statusMap).map(([priority, { label, color }]) => (
           <Select.Item value={label} key={priority}>
-            <Badge color={color}>{icon}</Badge>
+            <Flex align='center' gap='1'>
+              <Badge color={color}>{label}</Badge>
+            </Flex>
           </Select.Item>
         ))}
       </Select.Content>

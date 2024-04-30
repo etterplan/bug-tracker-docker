@@ -1,32 +1,41 @@
 'use client'
 import './UserComboBox.css';
-import { useState, useMemo, startTransition, FC } from 'react';
+import { useState, useMemo, startTransition, FC, useEffect, useCallback } from 'react';
 import { Flex } from '@radix-ui/themes';
 import { Combobox, ComboboxItem, ComboboxList, ComboboxProvider } from "@ariakit/react";
 import * as RadixSelect from "@radix-ui/react-select";
 import { matchSorter } from 'match-sorter'
 import { MagnifyingGlassIcon, ChevronDownIcon, CheckIcon, Cross1Icon } from '@radix-ui/react-icons';
-import useUser from './useUser'
-import { Skeleton } from '@/app/components';
+import { User } from "@prisma/client";
 
 interface UserComboBoxProps {
   onValueChange: (value: string) => void;
+  userAdded: boolean;
+  setUserAdded: (value: boolean) => void;
+  users: User[];
 }
 
-const UserComboBox: FC<UserComboBoxProps> = ({ onValueChange }) => {
-  const { data: users, error, isLoading } = useUser();
+const UserComboBox: FC<UserComboBoxProps> = ({ onValueChange, userAdded, setUserAdded, users}) => {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState('');
   const [searchValue, setSearchValue] = useState('');
 
-  const clearSelection = () => {
+  const clearSelection = useCallback(() => {
     setValue('');
     setSearchValue('');
     setOpen(false);
     onValueChange('')
-  };
+  }, [setValue, setSearchValue, setOpen, onValueChange]);
+
+  useEffect(() => {
+    if (userAdded) {
+      clearSelection();
+      setUserAdded(false);
+    }
+  }, [userAdded, setUserAdded, clearSelection])
+
   const matches = useMemo(() => {
-    if (isLoading || error || !users) return [];
+    if (!users) return [];
     if (!searchValue) return users;
     const keys = ["name", "id"];
     const matches = matchSorter(users, searchValue, { keys });
@@ -35,11 +44,7 @@ const UserComboBox: FC<UserComboBoxProps> = ({ onValueChange }) => {
       matches.push(selectedUser);
     }
     return matches;
-  }, [searchValue, value, users, error, isLoading]);
-
-  if (isLoading) {
-    return <Skeleton height={"2rem"} />;
-  }
+  }, [searchValue, value, users]);
 
   return (
     <div>
@@ -51,6 +56,7 @@ const UserComboBox: FC<UserComboBoxProps> = ({ onValueChange }) => {
       }}
       open={open}
       onOpenChange={setOpen}
+      disabled={!users || users.length === 0}
     >
       <ComboboxProvider
         open={open}
