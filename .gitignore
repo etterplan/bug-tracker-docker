@@ -9,7 +9,7 @@
 /coverage
 
 # next.js
-/.next/
+bug-tracker/.next/
 /out/
 
 # production
@@ -35,3 +35,5 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# folders
+database/db/

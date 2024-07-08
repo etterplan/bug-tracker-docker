@@ -2,7 +2,7 @@
 import { Table } from "@radix-ui/themes";
 import { IssueStatusBadge, PriorityIcon } from "../components";
 import ChooseProject from "../components/ChooseProject";
-import { Issue, Project, Status } from "@prisma/client";
+import { Issue, Project } from "@prisma/client";
 
 interface Props {
   issues: Issue[];

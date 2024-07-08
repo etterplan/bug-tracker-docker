@@ -1,0 +1,50 @@
+services:
+  database:
+    image: mysql:8.0
+    volumes:
+      - ./database/db:/var/lib/mysql
+    networks:
+      cash_register_default:
+        ipv4_address: 172.18.0.2
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: tracker_bug_db_100!
+      MYSQL_DATABASE: bug_tracker_db
+
+  db-services:
+    build: db-services
+    volumes:      
+      - ./db-services:/db-services
+#      - /react/cash-db-server
+      - /db-services/node_modules
+    networks:
+      cash_register_default:
+        ipv4_address: 172.18.0.3
+    ports:
+      - "5000:5000"
+    depends_on:
+      - database
+
+  bug-tracker:
+    build: bug-tracker
+    volumes:      
+      - ./bug-tracker:/bug-tracker
+      #- /react/cash-web/
+      - /bug-tracker/node_modules
+    networks:
+      cash_register_default:
+        ipv4_address: 172.18.0.4
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db-services
+
+networks:
+  cash_register_default:
+    ipam:
+      driver: default
+      config: 
+        - subnet: 172.18.0.0/16
+      
+

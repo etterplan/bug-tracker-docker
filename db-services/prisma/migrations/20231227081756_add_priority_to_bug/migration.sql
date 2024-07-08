@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE `Issue` ADD COLUMN `priority` ENUM('HIGH', 'LOW', 'MEDIUM', 'BLOCKER', 'MINOR') NOT NULL DEFAULT 'MEDIUM';

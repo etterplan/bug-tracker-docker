@@ -1,0 +1,207 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider     = "mysql"
+  url          = env("DATABASE_URL")
+  relationMode = "prisma"
+}
+
+// Define the Project model
+model Project {
+  id          Int           @id @default(autoincrement())
+  name        String        @db.VarChar(255)
+  description String        @db.VarChar(255)
+  status      ProjectStatus @default(NEW)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  members     User[] // A project can have multiple members (users)
+  board       Board         @relation(fields: [boardId], references: [id]) // A project has a board
+  issues      Issue[] // A project can have multiple tasks
+  boardId     Int           @unique
+}
+
+enum ProjectStatus {
+  NEW
+  ON_TRACK
+  AT_RISK
+  OFF_TRACK
+  ON_HOLD
+  COMPLETE
+}
+
+// Board model representing a board within a project
+model Board {
+  id        Int       @id @default(autoincrement())
+  name      String    @db.VarChar(255)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  project   Project?
+  projectId Int?      @unique
+  sections  Section[] // A board can have multiple sections
+  issues    Issue[]
+
+  @@index([projectId])
+}
+
+// Section model representing a section within a board
+model Section {
+  id        Int      @id @default(autoincrement())
+  name      String
+  board     Board    @relation(fields: [boardId], references: [id])
+  boardId   Int
+  issues    Issue[]
+  status    Status // Status of the section itself
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([boardId])
+}
+
+model Issue {
+  id               Int            @id @default(autoincrement())
+  title            String         @db.VarChar(255)
+  description      String         @db.Text
+  status           Status         @default(TODO)
+  priority         Priority       @default(MEDIUM)
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  assignedToUserId String?        @db.VarChar(255)
+  assignedToUser   User?          @relation(fields: [assignedToUserId], references: [id])
+  Comment          Comment[]
+  project          Project?       @relation(fields: [projectId], references: [id])
+  projectId        Int?
+  position         Float?
+  Board            Board?         @relation(fields: [boardId], references: [id])
+  boardId          Int?
+  Section          Section?       @relation(fields: [sectionId], references: [id])
+  sectionId        Int?
+  IssueHistory     IssueHistory[]
+
+  @@index([assignedToUserId])
+  @@index([projectId])
+  @@index([boardId])
+  @@index([sectionId])
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  text      String   @db.VarChar(255)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  issue     Issue?   @relation(fields: [issueId], references: [id])
+  issueId   Int?
+  user      User?    @relation(fields: [userId, userEmail, userImage, userName], references: [id, email, image, name])
+  userEmail String?
+  userId    String?
+  userImage String?
+  userName  String?
+
+  @@index([issueId])
+  @@index([userId, userEmail, userImage, userName])
+}
+
+model IssueHistory {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  issue     Issue    @relation(fields: [issueId], references: [id])
+  issueId   Int
+  action    Action   @default(CREATED)
+  oldValue  String?
+  newValue  String?
+  user      User?    @relation(fields: [userId, userName, userImage], references: [id, name, image])
+  userId    String?
+  userName  String?
+  userImage String?
+
+  @@index([issueId])
+  @@index([userId, userName, userImage])
+}
+
+enum Action {
+  CREATED
+  STATUS_CHANGE
+  PRIORITY_CHANGE
+  ASSIGNEE_CHANGE
+  COMMENT_ADD
+  COMMENT_DELETE
+  COMMENT_EDIT
+  DESCRIPTION_CHANGE
+  TITLE_CHANGE
+}
+
+enum Status {
+  TODO
+  OPEN
+  IN_PROGRESS
+  CLOSED
+}
+
+enum Priority {
+  HIGH
+  LOW
+  MEDIUM
+  BLOCKER
+  MINOR
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model User {
+  id             String         @id @default(cuid())
+  name           String?
+  email          String?        @unique
+  emailVerified  DateTime?
+  image          String?
+  accounts       Account[]
+  sessions       Session[]
+  assignedIssues Issue[]
+  Comment        Comment[]
+  Project        Project?       @relation(fields: [projectId], references: [id])
+  projectId      Int?
+  IssueHistory   IssueHistory[]
+
+  @@unique([id, email, image, name])
+  @@unique([id, name, image])
+  @@index([projectId])
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
