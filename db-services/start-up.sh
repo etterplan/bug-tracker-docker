@@ -13,7 +13,7 @@ npm install prisma
 npm install @prisma/client
 
 # Install cors
-npm install cors
+#npm install cors
 
 # Install dotenv (.env)
 npm install dotenv
@@ -29,6 +29,10 @@ npx prisma migrate dev --name init
 
 # Generate Prisma Client
 npx prisma generate
+
+# Install jest (test-framework for JaveScript)
+npm install jest supertest
+#npm install --save-dev jest @types/jest ts-jest
 
 # Rebuild the server.
 #npm run build
