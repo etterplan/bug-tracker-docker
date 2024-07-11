@@ -12,19 +12,11 @@ export const dynamic = "force-dynamic";
 const IssuesPage = async ({ searchParams }: { searchParams: IssuseQuery }) => {
   const { status, userId, searchText, orderBy, page, pageSize } = prepareData(searchParams);
 
-  //==============================================================
-  // TODO: This code need more work.
-  //==============================================================
   try {
-    console.log('======================================');
-    console.log(`${status}, ${userId}, ${searchText}, ${orderBy}, ${page}, ${pageSize}`);
     const { issues, issueCount } = await fetchDataFromServer(status, userId, searchText, orderBy, page, pageSize);
-    console.log(`issues: ${issues},  issueCount: ${issueCount}`);
     const projects = await fetchProjects();
-    console.log(projects);
 
     return renderComponents(searchParams, issues, projects, issueCount, pageSize, page);
-    //return (<div><h1>WAIT</h1></div>);
   } catch (error) {
     console.error('Error in fetching data from server:', error);
     // Handle error accordingly
@@ -39,9 +31,6 @@ const renderComponents = (searchParams, issues, projects, issueCount, pageSize, 
       <Pagination itemsCount={issueCount} pageSize={pageSize} currentPage={page} />
     </Flex>
   );
-  //<IssueTable searchParams={searchParams} issues={issues} projects={projects} />
-  //<Pagination itemsCount={issueCount} pageSize={pageSize} currentPage={page} />
-
 };
 
 const prepareData = (searchParams: IssuseQuery) => {
@@ -61,7 +50,7 @@ const prepareData = (searchParams: IssuseQuery) => {
 const fetchDataFromServer = async (status, userId, searchText, orderBy, page, pageSize) => {
   console.log(`${status}, ${userId}, ${searchText}, ${orderBy}, ${page}, ${pageSize}`);
   try {
-    const response = await axios.post('http://172.18.0.3:5000/api/issues/find_all_issues', {
+    const response = await axios.get('$(DB_SERVER_URL)/api/issues/find_all_issues', {
       searchParams: {
         status: status,
         userId: userId,
@@ -73,7 +62,7 @@ const fetchDataFromServer = async (status, userId, searchText, orderBy, page, pa
     });
 
     const dataArray = response.data; // Get the array from response.data
-    const arrayLength = dataArray.length; // Get the length of the array
+    const arrayLength = 1; //dataArray.length; // Get the length of the array
 
     return {
       issues: dataArray, // Return the array
@@ -86,7 +75,8 @@ const fetchDataFromServer = async (status, userId, searchText, orderBy, page, pa
 };
 
 const fetchProjects = async () => {
-  const projects = await prisma.project.findMany();
+//  const projects1 = await prisma.project.findMany();
+  const projects = await axios.get(`$(DB_SERVER_URL)/api/project/findAll`, {});
   return projects;
 };
 

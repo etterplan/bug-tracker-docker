@@ -15,6 +15,9 @@ npm install @prisma/client
 # Install cors
 #npm install cors
 
+# Install winston
+npm install winston
+
 # Install dotenv (.env)
 npm install dotenv
 
@@ -38,7 +41,26 @@ npm install jest supertest
 #npm run build
 
 # Start the server application
-npm run start-server
+#npm run start-server
 
 # Wait forever
-#sh -c "trap : TERM INT; sleep infinity & wait"
+sh -c "trap : TERM INT; sleep infinity & wait"
+
+
+
+    [
+      {
+        id: 1,
+        name: 'My project',
+        description: 'jfdsklaö\n',
+        status: 'NEW',
+        createdAt: '2024-07-08T13:29:00.192Z',
+        updatedAt: '2024-07-08T13:29:00.192Z',
+        boardId: 1
+      }
+    ]
+
+
+
+
+

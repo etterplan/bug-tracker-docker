@@ -11,8 +11,8 @@ COPY . .
 EXPOSE 5000
 
 # Start the set-up script, it will start the application.
-#CMD ["sh", "./start-up.sh"]
+CMD ["sh", "./start-up.sh"]
 
 # Wait forever
-CMD ["sh", "-c", "trap : TERM INT; sleep infinity & wait"]
+#CMD ["sh", "-c", "trap : TERM INT; sleep infinity & wait"]
 

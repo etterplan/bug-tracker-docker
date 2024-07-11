@@ -36,7 +36,7 @@ describe('Test api/issues/*', () => {
 
     test('/find_all_issues with success', async () => {
         const response = await request(app)
-            .post('/api/issues/find_all_issues')
+            .get('/api/issues/find_all_issues')
             .send({
                 searchParams: {
                     //status: 'TODO',
@@ -46,14 +46,22 @@ describe('Test api/issues/*', () => {
                     //page: 1,
                     //pageSize: 10,
                 },
-            })
-            .set('Accept', 'application/json');
+            });
 
+        console.log(response.body);
         expect(response.status).toBe(200);
-        expect(response.body.length).toEqual(0);
+        expect(response.body.length).toEqual(1);
         expect(response.body[0]).toHaveProperty('title', 'A bug');
-
-
-        console.log(response.body[0]);
     })
+
+    test('/api/project/findAll with success', async () => {
+        const response = await request(app)
+            .get('/api/project/findAll')
+            .send({});
+
+        console.log(response.body);
+        expect(response.status).toBe(200);
+        expect(response.body.length).toEqual(1);
+        expect(response.body[0]).toHaveProperty('name', 'My project');
+    });
 });
