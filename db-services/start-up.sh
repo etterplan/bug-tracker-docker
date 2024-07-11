@@ -38,7 +38,7 @@ npm install jest supertest
 #npm run build
 
 # Start the server application
-#node src/server.js
+npm run start-server
 
 # Wait forever
 #sh -c "trap : TERM INT; sleep infinity & wait"
