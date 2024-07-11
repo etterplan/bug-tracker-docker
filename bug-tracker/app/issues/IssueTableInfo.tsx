@@ -28,7 +28,8 @@ const IssueTableInfo = ({ issues, projects }: Props) => {
             <IssueStatusBadge status={issue.status} id={issue.id} />
           </Table.Cell>
           <Table.Cell className="hidden md:table-cell">
-            {issue.createdAt.toDateString()}
+            {issue.createdAt}
+            {/* {issue.createdAt.toDateString()} */}
           </Table.Cell>
           <Table.Cell className="hidden md:table-cell">
             <PriorityIcon priority={issue.priority} id={issue.id} />

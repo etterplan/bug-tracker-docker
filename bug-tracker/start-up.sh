@@ -9,6 +9,9 @@ apk --update add mysql-client mariadb-connector-c
 # Install Express
 npm install express
 
+# Install Axios
+npm install axios
+
 # Install project dependencies
 npm install
 
@@ -19,7 +22,7 @@ npm run dev
 #npm run build
 
 # Start the server application
-npm start
+#npm start
 
 # Wait forever
-#sh -c "trap : TERM INT; sleep infinity & wait"
+sh -c "trap : TERM INT; sleep infinity & wait"
