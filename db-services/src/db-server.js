@@ -13,7 +13,7 @@ const logger = winston.createLogger({
   format: winston.format.json(),
   transports: [
     new winston.transports.Console(), // Log to console
-    new winston.transports.File({ filename: '/db-services/issues.log', level: 'info' }), // Log errors to a file
+    new winston.transports.File({ filename: '/db-services/server.log', level: 'info' }), // Log errors to a file
   ],  
 });
 
