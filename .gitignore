@@ -39,4 +39,4 @@ next-env.d.ts
 database/db/
 
 # files
-db-services/server.log
+db-services/db-server.log

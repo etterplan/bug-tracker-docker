@@ -1,4 +1,3 @@
-import axios from 'axios'; // Make sure to have axios installed
 import prisma from "@/prisma/client";
 import { Status } from "@prisma/client";
 import { Flex } from "@radix-ui/themes";
@@ -9,135 +8,108 @@ import IssueAction from "./IssueAction";
 
 export const dynamic = "force-dynamic";
 
+interface findManyIssuesProps {
+  where: {
+    status: any,
+    assignedToUserId: string
+  };
+  searchText: string;
+  orderBy: any;
+  page: number;
+  pageSize: number;
+}
+
+const findManyIssues = async (props: findManyIssuesProps) => {
+  const issues = await prisma.issue.findMany({
+    where: {
+      ...props.where,
+      title: {
+        contains: props.searchText,
+      },
+    },
+    orderBy: props.orderBy,
+    skip: (props.page - 1) * props.pageSize,
+    take: props.pageSize,
+  });
+
+  return issues;
+};
+
+interface IssueCountProps {
+  where: Record<string, any>; // Assuming where is an object with string keys and any values
+  searchText: string; // Assuming searchText is a string
+}
+
+const countIssue = async (props: IssueCountProps) => {
+  const issueCount = await prisma.issue.count({
+    where: {
+      ...props.where,
+      title: {
+        contains: props.searchText,
+      },
+    },
+  });
+
+  return issueCount;
+};
+
+const findProjects = async () => {
+  const projects = await prisma.project.findMany();
+  return projects;
+};
+
 const IssuesPage = async ({ searchParams }: { searchParams: IssuseQuery }) => {
-  const { status, userId, searchText, orderBy, page, pageSize } = prepareData(searchParams);
-
-  try {
-    const { issues, issueCount } = await fetchDataFromServer(status, userId, searchText, orderBy, page, pageSize);
-    const projects = await fetchProjects();
-
-    return renderComponents(searchParams, issues, projects, issueCount, pageSize, page);
-  } catch (error) {
-    console.error('Error in fetching data from server:', error);
-    // Handle error accordingly
-  }
-};
-
-const renderComponents = (searchParams, issues, projects, issueCount, pageSize, page) => {
-  return (
-    <Flex direction="column" gap="3">
-      <IssueAction />
-      <IssueTable searchParams={searchParams} issues={issues} projects={projects} />
-      <Pagination itemsCount={issueCount} pageSize={pageSize} currentPage={page} />
-    </Flex>
-  );
-};
-
-const prepareData = (searchParams: IssuseQuery) => {
   const statuses = Object.values(Status);
-  const status = statuses.includes(searchParams.status) ? searchParams.status : undefined;
+  const status = statuses.includes(searchParams.status)
+    ? searchParams.status
+    : undefined;
   const userId = searchParams.userId;
   const searchText = searchParams.search || "";
+  const where = { status, assignedToUserId: userId };
   const orderBy = columnNames.includes(searchParams.orderBy)
     ? { [searchParams.orderBy]: searchParams.sortOrder || "asc" }
     : undefined;
   const page = parseInt(searchParams.page) || 1;
   const pageSize = parseInt(searchParams.pageSize) || 10;
-
-  return { status, userId, searchText, orderBy, page, pageSize };
+  const issues = await findManyIssues({where, searchText, orderBy, page, pageSize});
+  // const issues = await prisma.issue.findMany({
+  //   where: {
+  //     ...where,
+  //     title: {
+  //       contains: searchText,
+  //     },
+  //   },
+  //   orderBy: orderBy,
+  //   skip: (page - 1) * pageSize,
+  //   take: pageSize,
+  // });
+  const issueCount = countIssue({ where, searchText });
+  // const issueCount = await prisma.issue.count({
+  //   where: {
+  //     ...where,
+  //     title: {
+  //       contains: searchText,
+  //     },
+  //   },
+  // });
+  const projects = findProjects();
+  //const projects = await prisma.project.findMany();
+  return (
+    <Flex direction="column" gap="3">
+      <IssueAction />
+      <IssueTable
+        searchParams={searchParams}
+        issues={issues}
+        projects={projects}
+      />
+      <Pagination
+        itemsCount={issueCount}
+        pageSize={pageSize}
+        currentPage={page}
+      />
+    </Flex>
+  );
 };
-
-const fetchDataFromServer = async (status, userId, searchText, orderBy, page, pageSize) => {
-  console.log(`${status}, ${userId}, ${searchText}, ${orderBy}, ${page}, ${pageSize}`);
-  try {
-    const response = await axios.get('$(DB_SERVER_URL)/api/issues/find_all_issues', {
-      searchParams: {
-        status: status,
-        userId: userId,
-        searchText: 'bug',
-        orderBy: orderBy,
-        page: page,
-        pageSize: pageSize
-      }
-    });
-
-    const dataArray = response.data; // Get the array from response.data
-    const arrayLength = 1; //dataArray.length; // Get the length of the array
-
-    return {
-      issues: dataArray, // Return the array
-      issuesCount: arrayLength // Return the length of the array
-    };
-  } catch (error) {
-    console.error(error);
-    return { issues: [], issuesCount: 0 }; // Return an empty array and length 0 in case of an error
-  }
-};
-
-const fetchProjects = async () => {
-//  const projects1 = await prisma.project.findMany();
-  const projects = await axios.get(`$(DB_SERVER_URL)/api/project/findAll`, {});
-  return projects;
-};
-
-
-
-// const IssuesPage = async ({ searchParams }: { searchParams: IssuseQuery }) => {
-//   const statuses = Object.values(Status);
-//   const status = statuses.includes(searchParams.status)
-//     ? searchParams.status
-//     : undefined;
-//   const userId = searchParams.userId;
-//   const searchText = searchParams.search || "";
-//   const where = { status, assignedToUserId: userId };
-//   const orderBy = columnNames.includes(searchParams.orderBy)
-//     ? { [searchParams.orderBy]: searchParams.sortOrder || "asc" }
-//     : undefined;
-//   const page = parseInt(searchParams.page) || 1;
-//   const pageSize = parseInt(searchParams.pageSize) || 10;
-
-//   // Make call to db-server app.post('/api/issues/find_all_issues',...)
-//   try {
-//     const { data } = await axios.post('/api/issues/find_all_issues', {
-//       where: {
-//         ...where,
-//         title: {
-//           contains: searchText,
-//         },
-//       },
-//       orderBy: orderBy,
-//       skip: (page - 1) * pageSize,
-//       take: pageSize,
-//     });
-
-//     const issues = data.issues;
-//     console.log(issues); // DEBUG
-//     const issueCount = data.issueCount;
-//     console.log(issueCount); // DEBUG
-
-//   const projects = await prisma.project.findMany();
-//   return (
-//     <Flex direction="column" gap="3">
-//       <IssueAction />
-//       <IssueTable
-//         searchParams={searchParams}
-//         issues={issues}
-//         projects={projects}
-//       />
-//       <Pagination
-//         itemsCount={issueCount}
-//         pageSize={pageSize}
-//         currentPage={page}
-//       />
-//     </Flex>
-//   );
-//   // Catch error from '/api/issues/find_all_issues'
-// } catch (error) {
-//   console.error('Error in fetching data from server:', error);
-//   // Handle error accordingly
-// }
-
-// };
 
 export default IssuesPage;
 
