@@ -1,4 +1,4 @@
-const { app, startServer } = require('./issues'); // Make sure to replace 'your_file_name' with the actual file name
+const { app, startServer } = require('./db-server'); // Make sure to replace 'your_file_name' with the actual file name
 
 // Start the server
 startServer().then(() => {
