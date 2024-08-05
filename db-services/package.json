@@ -1,15 +1,15 @@
 {
   "dependencies": {
-    "@prisma/client": "^5.16.2",
+    "@prisma/client": "^5.17.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
-    "prisma": "^5.16.2",
+    "prisma": "^5.17.0",
     "supertest": "^7.0.0",
     "winston": "^3.13.1"
   },
   "scripts": {
-    "start-server": "node src/start_server.js",
+    "start-services": "node src/db-services.js",
     "test": "npx jest",
     "test:cover": "jest --coverage"
   },
