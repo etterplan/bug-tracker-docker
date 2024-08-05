@@ -24,6 +24,9 @@ npm install dotenv
 # Install express
 npm install express
 
+# Install moment-timezone
+npm install moment-timezone
+
 # Install project dependencies
 npm install
 
@@ -34,7 +37,8 @@ npx prisma migrate dev --name init
 npx prisma generate
 
 # Install jest (test-framework for JaveScript)
-npm install jest supertest
+#npm install jest supertest
+npm install --save-dev jest
 #npm install --save-dev jest @types/jest ts-jest
 
 # Rebuild the server.
@@ -45,22 +49,3 @@ npm install jest supertest
 
 # Wait forever
 sh -c "trap : TERM INT; sleep infinity & wait"
-
-
-
-    [
-      {
-        id: 1,
-        name: 'My project',
-        description: 'jfdsklaö\n',
-        status: 'NEW',
-        createdAt: '2024-07-08T13:29:00.192Z',
-        updatedAt: '2024-07-08T13:29:00.192Z',
-        boardId: 1
-      }
-    ]
-
-
-
-
-

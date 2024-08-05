@@ -37,6 +37,8 @@ next-env.d.ts
 
 # folders
 database/db/
+db-services/logs/
 
 # files
 db-services/db-server.log
+
