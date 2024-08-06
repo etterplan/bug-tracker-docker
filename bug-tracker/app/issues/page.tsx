@@ -1,10 +1,17 @@
+//import { Metadata } from "next";
+//import IssueTable, { IssuseQuery, columnNames } from "./IssueTable";
+
 import prisma from "@/prisma/client";
 import { Status } from "@prisma/client";
+import { Priority } from "@prisma/client";
+import { Issue } from "@prisma/client";
 import { Flex } from "@radix-ui/themes";
 import { Metadata } from "next";
 import Pagination from "../components/Pagination";
 import IssueTable, { IssuseQuery, columnNames } from "./IssueTable";
 import IssueAction from "./IssueAction";
+
+
 
 export const dynamic = "force-dynamic";
 
@@ -14,7 +21,7 @@ interface findManyIssuesProps {
     assignedToUserId: string
   };
   searchText: string;
-  orderBy: any;
+  orderBy: string;
   page: number;
   pageSize: number;
 }
@@ -27,7 +34,7 @@ const findManyIssues = async (props: findManyIssuesProps) => {
         contains: props.searchText,
       },
     },
-    orderBy: props.orderBy,
+    //orderBy: props.orderBy,
     skip: (props.page - 1) * props.pageSize,
     take: props.pageSize,
   });
@@ -35,80 +42,91 @@ const findManyIssues = async (props: findManyIssuesProps) => {
   return issues;
 };
 
-interface IssueCountProps {
-  where: Record<string, any>; // Assuming where is an object with string keys and any values
-  searchText: string; // Assuming searchText is a string
-}
+const toFindManyIssuesProps = ({ searchParams }: { searchParams: IssuseQuery }): findManyIssuesProps  => {
+  let status = undefined;
+  let userId = "-1";
+  let searchText = "";
+  let orderBy = "desc";
+  let page = 1;
+  let pageSize = 10;
 
-const countIssue = async (props: IssueCountProps) => {
-  const issueCount = await prisma.issue.count({
+  if (Object.keys(searchParams).length > 0) {
+    status = searchParams.status;
+    userId = searchParams.userId;
+    searchText = searchParams.search;
+    //orderBy = { [searchParams.orderBy]: searchParams.sortOrder };
+    page = parseInt(searchParams.page);
+    pageSize = parseInt(searchParams.pageSize);
+  }
+
+  const props: findManyIssuesProps = {
     where: {
-      ...props.where,
-      title: {
-        contains: props.searchText,
-      },
+      status: status,
+      assignedToUserId: userId
     },
-  });
+    searchText: searchText,
+    orderBy: orderBy,
+    page: page,
+    pageSize: pageSize
+  };
 
-  return issueCount;
+  console.log(props);
+  return props;
 };
 
-const findProjects = async () => {
-  const projects = await prisma.project.findMany();
-  return projects;
+const getAllIssues = async ({ searchParams }: { searchParams: IssuseQuery }): Issue[] => {
+  const props = toFindManyIssuesProps({ searchParams });
+  const issues = await findManyIssues(props);
+
+  return issues;
 };
 
 const IssuesPage = async ({ searchParams }: { searchParams: IssuseQuery }) => {
-  const statuses = Object.values(Status);
-  const status = statuses.includes(searchParams.status)
-    ? searchParams.status
-    : undefined;
-  const userId = searchParams.userId;
-  const searchText = searchParams.search || "";
-  const where = { status, assignedToUserId: userId };
-  const orderBy = columnNames.includes(searchParams.orderBy)
-    ? { [searchParams.orderBy]: searchParams.sortOrder || "asc" }
-    : undefined;
-  const page = parseInt(searchParams.page) || 1;
-  const pageSize = parseInt(searchParams.pageSize) || 10;
-  const issues = await findManyIssues({where, searchText, orderBy, page, pageSize});
-  // const issues = await prisma.issue.findMany({
-  //   where: {
-  //     ...where,
-  //     title: {
-  //       contains: searchText,
-  //     },
-  //   },
-  //   orderBy: orderBy,
-  //   skip: (page - 1) * pageSize,
-  //   take: pageSize,
-  // });
-  const issueCount = countIssue({ where, searchText });
-  // const issueCount = await prisma.issue.count({
-  //   where: {
-  //     ...where,
-  //     title: {
-  //       contains: searchText,
-  //     },
-  //   },
-  // });
-  const projects = findProjects();
-  //const projects = await prisma.project.findMany();
-  return (
-    <Flex direction="column" gap="3">
-      <IssueAction />
-      <IssueTable
-        searchParams={searchParams}
-        issues={issues}
-        projects={projects}
-      />
-      <Pagination
-        itemsCount={issueCount}
-        pageSize={pageSize}
-        currentPage={page}
-      />
-    </Flex>
-  );
+  try {
+    const issues = await getAllIssues({searchParams});
+    console.log(issues);
+
+    // const issue1 = {
+    //   "id": 1323,
+    //   "title": "Title_1",
+    //   "status": "IN_PROGRESS",
+    //   "priority": Priority.MEDIUM,
+    //   "createAt": new Date().toISOString(),
+    //   "projectId": 4321
+    // };
+    // const issue2 = {
+    //   "id": 1325,
+    //   "title": "An_issue",
+    //   "status": "TODO",
+    //   "priority": Priority.LOW,
+    //   "createAt": new Date().toISOString(),
+    //   "projectId": 4321
+    // };
+
+    //let issues = [issue1, issue2];
+    let projects = {};
+    let issueCount = 0;
+    let pageSize = 10;
+    let page = 1;
+
+    return (
+      <Flex direction="column" gap="3">
+        <IssueAction />
+        <IssueTable
+          searchParams={searchParams}
+          issues={issues}
+          projects={projects}
+        />
+        <Pagination
+          itemsCount={issueCount}
+          pageSize={pageSize}
+          currentPage={page}
+        />
+      </Flex>
+    );
+  } catch (error) {
+    console.error("Error in IssuesPage: ", error);
+  }
 };
 
 export default IssuesPage;
