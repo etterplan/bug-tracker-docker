@@ -2,23 +2,9 @@ const express = require('express');
 const router = express.Router();
 const { PrismaClient } = require('@prisma/client');
 const cors = require('cors');
+const logger = require('../logger');
 
 const prisma = new PrismaClient();
-
-// const winston = require('winston');
-
-// const logger = winston.createLogger({
-//   level: 'info',
-//   format: winston.format.json(),
-//   transports: [
-//     new winston.transports.Console(), // Log to console
-//     new winston.transports.File({ filename: '/db-services/db-server.log', level: 'info' }), // Log errors to a file
-//   ],
-// });
-
-// function logError(message, error) {
-//   logger.info({ message, error });
-// }
 
 router.use(cors());
 router.use(express.json());
@@ -38,6 +24,8 @@ router.get('/issues/test', async (req, res) => {
       "Hello": "World"
     }
 
+    logger.info("Successfully processed the /issues/test")
+    logger.error("Failed processed the /issues/test")
     res.status(200).json(jsonStruct);
   } catch (error) {
     // Handle any errors and send a 500 status code with an error message

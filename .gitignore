@@ -26,6 +26,7 @@ yarn-error.log*
 
 # local env files
 .env*.local
+# .env files contains secure information and should not be stored on a server.
 .env
 
 # vercel
