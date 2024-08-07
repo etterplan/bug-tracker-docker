@@ -12,19 +12,19 @@ services:
       MYSQL_ROOT_PASSWORD: tracker_bug_db_100!
       MYSQL_DATABASE: bug_tracker_db
 
-  db-services:
-    build: db-services
-    volumes:      
-      - ./db-services:/db-services
-#      - /react/cash-db-server
-      - /db-services/node_modules
-    networks:
-      cash_register_default:
-        ipv4_address: 172.18.0.3
-    ports:
-      - "5000:5000"
-    depends_on:
-      - database
+#   db-services:
+#     build: db-services
+#     volumes:      
+#       - ./db-services:/db-services
+# #      - /react/cash-db-server
+#       - /db-services/node_modules
+#     networks:
+#       cash_register_default:
+#         ipv4_address: 172.18.0.3
+#     ports:
+#       - "5000:5000"
+#     depends_on:
+#       - database
 
   bug-tracker:
     build: bug-tracker
@@ -38,7 +38,8 @@ services:
     ports:
       - "3000:3000"
     depends_on:
-      - db-services
+      - database
+      #- db-services
 
 networks:
   cash_register_default:
