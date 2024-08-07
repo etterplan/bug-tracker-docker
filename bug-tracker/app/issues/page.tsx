@@ -1,6 +1,3 @@
-//import { Metadata } from "next";
-//import IssueTable, { IssuseQuery, columnNames } from "./IssueTable";
-
 import prisma from "@/prisma/client";
 import { Status } from "@prisma/client";
 import { Priority } from "@prisma/client";
@@ -10,8 +7,6 @@ import { Metadata } from "next";
 import Pagination from "../components/Pagination";
 import IssueTable, { IssuseQuery, columnNames } from "./IssueTable";
 import IssueAction from "./IssueAction";
-
-
 
 export const dynamic = "force-dynamic";
 
@@ -26,30 +21,16 @@ interface findManyIssuesProps {
   pageSize: number;
 }
 
-const findManyIssues = async (props: findManyIssuesProps) => {
-  const issues = await prisma.issue.findMany({
-    where: {
-      ...props.where,
-      title: {
-        contains: props.searchText,
-      },
-    },
-    //orderBy: props.orderBy,
-    skip: (props.page - 1) * props.pageSize,
-    take: props.pageSize,
-  });
-
-  return issues;
-};
-
-const toFindManyIssuesProps = ({ searchParams }: { searchParams: IssuseQuery }): findManyIssuesProps  => {
+const toFindManyIssuesProps = ({ searchParams }: { searchParams: IssuseQuery }): findManyIssuesProps => {
+  // Create all variables with default values.
   let status = undefined;
   let userId = "-1";
   let searchText = "";
   let orderBy = "desc";
-  let page = 1;
+  let page = 2;
   let pageSize = 10;
 
+  // Update variables with values from searchParams
   if (Object.keys(searchParams).length > 0) {
     status = searchParams.status;
     userId = searchParams.userId;
@@ -59,6 +40,7 @@ const toFindManyIssuesProps = ({ searchParams }: { searchParams: IssuseQuery }):
     pageSize = parseInt(searchParams.pageSize);
   }
 
+  // Create the object to return
   const props: findManyIssuesProps = {
     where: {
       status: status,
@@ -74,40 +56,47 @@ const toFindManyIssuesProps = ({ searchParams }: { searchParams: IssuseQuery }):
   return props;
 };
 
-const getAllIssues = async ({ searchParams }: { searchParams: IssuseQuery }): Issue[] => {
-  const props = toFindManyIssuesProps({ searchParams });
-  const issues = await findManyIssues(props);
-
+const findManyIssues = async (props: findManyIssuesProps) => {
+  let issues = [];
+  try {
+    issues = await prisma.issue.findMany({
+      where: {
+        title: {
+          contains: props.searchText,
+        },
+      },
+     skip: (props.page - 1) * props.pageSize,
+     take: props.pageSize,      
+    });
+  } catch (error) {
+    console.error(error);
+  }
   return issues;
-};
+}
+
+const countIssues = async (where: any, searchText: String) => {
+  return await prisma.issue.count({
+    where: {
+//      ...where,
+      title: {
+        contains: searchText
+      },
+    }
+  });
+}
+
+const findManyProjects = async () => {
+  return await prisma.project.findMany();
+}
 
 const IssuesPage = async ({ searchParams }: { searchParams: IssuseQuery }) => {
   try {
-    const issues = await getAllIssues({searchParams});
+    const searchProps = toFindManyIssuesProps({ searchParams });
+    const issues = await findManyIssues(searchProps);
     console.log(issues);
 
-    // const issue1 = {
-    //   "id": 1323,
-    //   "title": "Title_1",
-    //   "status": "IN_PROGRESS",
-    //   "priority": Priority.MEDIUM,
-    //   "createAt": new Date().toISOString(),
-    //   "projectId": 4321
-    // };
-    // const issue2 = {
-    //   "id": 1325,
-    //   "title": "An_issue",
-    //   "status": "TODO",
-    //   "priority": Priority.LOW,
-    //   "createAt": new Date().toISOString(),
-    //   "projectId": 4321
-    // };
-
-    //let issues = [issue1, issue2];
-    let projects = {};
-    let issueCount = 0;
-    let pageSize = 10;
-    let page = 1;
+    const issueCount = await countIssues(searchProps.where, searchProps.searchText);
+    const projects = await findManyProjects();
 
     return (
       <Flex direction="column" gap="3">
@@ -119,8 +108,8 @@ const IssuesPage = async ({ searchParams }: { searchParams: IssuseQuery }) => {
         />
         <Pagination
           itemsCount={issueCount}
-          pageSize={pageSize}
-          currentPage={page}
+          pageSize={searchProps.pageSize}
+          currentPage={searchProps.page}
         />
       </Flex>
     );

@@ -4,6 +4,8 @@ import { IssueStatusBadge, PriorityIcon } from "../components";
 import ChooseProject from "../components/ChooseProject";
 import { Issue, Project } from "@prisma/client";
 
+const { format } = require('date-fns');
+
 interface Props {
   issues: Issue[];
   projects: Project[];
@@ -28,8 +30,7 @@ const IssueTableInfo = ({ issues, projects }: Props) => {
             <IssueStatusBadge status={issue.status} id={issue.id} />
           </Table.Cell>
           <Table.Cell className="hidden md:table-cell">
-            {issue.createdAt}
-            {/* {issue.createdAt.toDateString()} */}
+            {format(issue.createdAt.toLocaleString(), 'yyyy-MM-dd HH:mm:ss')}
           </Table.Cell>
           <Table.Cell className="hidden md:table-cell">
             <PriorityIcon priority={issue.priority} id={issue.id} />
