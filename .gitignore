@@ -39,6 +39,7 @@ next-env.d.ts
 # folders
 database/db/
 db-services/logs/
+test-robot/reports/
 
 # files
 db-services/db-server.log

@@ -41,6 +41,19 @@ services:
       - database
       #- db-services
 
+  test-robot:
+    build: test-robot
+    volumes:
+      - ./test-robot/reports:/opt/robotframework/reports
+      - ./test-robot/tests:/opt/robotframework/tests
+    environment:
+      - BROWSER=chrome
+    networks:
+      cash_register_default:
+        ipv4_address: 172.18.0.10
+    depends_on:
+      - bug-tracker
+
 networks:
   cash_register_default:
     ipam:
