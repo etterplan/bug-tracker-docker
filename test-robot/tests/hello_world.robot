@@ -1,14 +1,12 @@
 *** Settings ***
-Library    SeleniumLibrary
-
-*** Variables ***
-${SERVER}    http://172.18.0.4:3000
+Resource    ../keywords/common.robot
+#Library    SeleniumLibrary
+Suite Setup    Open Browser Suite
+Suite Teardown    Close Browser Suite
 
 *** Test Cases ***
-Open React App
-#    Sleep    400s
-    Open Browser    ${SERVER}    chrome
-    Page Should Contain    Dashboard
-    Page Should Contain    Projects
-    Page Should Contain    Issues
-    [Teardown]    Close Browser
+Test1
+    #Sleep    4000
+    Validate head menu
+Check that correct page is loaded
+    Check Page Title    Issue Tracker - Issue List

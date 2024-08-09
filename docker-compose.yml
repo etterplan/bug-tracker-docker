@@ -43,11 +43,14 @@ services:
 
   test-robot:
     build: test-robot
+#    image: ppodgorsek
     volumes:
       - ./test-robot/reports:/opt/robotframework/reports
       - ./test-robot/tests:/opt/robotframework/tests
+#      - ./test-robot:/opt/robotframework
     environment:
       - BROWSER=chrome
+      #- loglevel=DEBUG
     networks:
       cash_register_default:
         ipv4_address: 172.18.0.10
